@@ -1,0 +1,20 @@
+name: practical_data_wraggling
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - nltk
+  - spacy
+  - spacy-model-en_core_web_sm
+  - pytorch
+  - transformers
+  - tensorflow
+  - jupyter
+  - jupyterlab
