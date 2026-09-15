@@ -1,0 +1,35 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "48330b3c",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import numpy; print(\"numpy:\", numpy.__version__)\n",
+    "import pandas; print(\"pandas:\", pandas.__version__)\n",
+    "import scipy; print(\"scipy:\", scipy.__version__)\n",
+    "import matplotlib; print(\"matplotlib:\", matplotlib.__version__)\n",
+    "import seaborn; print(\"seaborn:\", seaborn.__version__)\n",
+    "import sklearn; print(\"scikit-learn:\", sklearn.__version__)\n",
+    "import nltk; print(\"nltk:\", nltk.__version__)\n",
+    "import spacy; print(\"spacy:\", spacy.__version__)\n",
+    "import tensorflow; print('tensorflow:', tensorflow.__version__)\n",
+    "import torch; print(\"torch:\", torch.__version__)\n",
+    "import transformers; print(\"transformers:\", transformers.__version__)"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
