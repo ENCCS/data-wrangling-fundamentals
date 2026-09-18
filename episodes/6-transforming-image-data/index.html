@@ -1,0 +1,965 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transforming Image Data &mdash; Practical Data Wrangling</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="prev" title="Wrangling Text Data" href="../5-wrangling-text-data/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            Practical Data Wrangling
+              <img src="../../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../1-getting-to-know-your-data/">Getting to Know Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../3-processing-categorical-data/">Processing Categorical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4-exploring-dates-times-and-time-series-data/">Exploring Dates, Times, and Time-Series Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Transforming Image Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#exploring-image-data">1. Exploring Image Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#image-properties">1.1 Image properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pixel-representation">1.2 Pixel representation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#image-resizing-cropping">2. Image Resizing &amp; Cropping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interpolation-methods-for-image-resizing">2.1 Interpolation methods for image resizing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cropping-images-at-different-locations">2.2 Cropping images at different locations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pixel-intensity-preprocessing">3. Pixel Intensity Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#normalization-of-pixel-values">3.1 Normalization of pixel values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adjustment-of-brightness-and-contrast">3.2 Adjustment of brightness and contrast</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#geometric-transformations">4. Geometric Transformations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#flipping-and-rotating-images">4.1 Flipping and rotating images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation-and-shearing-images">4.2 Translation and shearing images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#affine-transformation">4.3 Affine transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#image-formatting-preprocessing">5. Image Formatting &amp; Preprocessing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">Practical Data Wrangling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Transforming Image Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/data-wrangling-fundamentals/blob/main/content/episodes/6-transforming-image-data.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="transforming-image-data">
+<h1>Transforming Image Data<a class="headerlink" href="#transforming-image-data" title="Link to this heading"></a></h1>
+<p>We come across image data every day, often without even realizing how much information it contains. From photographs and medical scans to satellite images, social media posts, security cameras, and images captured by our smartphones, visual data has become an important part of our digital world. <strong>Image data is essential information represented as pixels</strong>, where each pixel contains values that describe properties such as color and intensity. Understanding how images are represented and how we can work with these pixel values is an important first step in computer vision and image-based applications.</p>
+<p>In this episode, we will focus on the practical transformation of image data and explore the common steps involved in preparing images for analysis and applications. We will start by learning how to load and inspect image data, and then move on to important transformations such as resizing, cropping, and geometric transformations like rotation and flipping. We will also explore image augmentation, which helps create useful variations of training images, and finally look at how to prepare and format image data for deep learning models. By the end of the episode, we will have a clear understanding of how raw images can be transformed into useful, model-ready data.</p>
+<div class='alert alert-info'>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Understand how images are represented using pixels, color channels, dimensions, and intensity values.</p></li>
+<li><p>Apply common image preprocessing techniques, including resizing, cropping, normalization, and pixel-intensity transformations.</p></li>
+<li><p>Perform geometric transformations and image augmentation techniques such as rotation, flipping, translation, and shearing.</p></li>
+<li><p>Prepare and format image data for deep learning models, including appropriate channel ordering, tensor shapes, and batch dimensions.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-success'>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 minutes teaching</p></li>
+<li><p>10 minutes exercising/discussion</p></li>
+</ul>
+</div>
+</div><section id="exploring-image-data">
+<h2>1. Exploring Image Data<a class="headerlink" href="#exploring-image-data" title="Link to this heading"></a></h2>
+<p>We first load the image data and display a sample image to get a basic understanding of the dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># load and display image</span>
+<span class="n">arrhenius</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/image-data/arrhenius.jpg"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ee42a732e23f797c43f40a3ce6ed39de58e572f9a13d06311a2173c35dcc1123.png" src="../../_images/ee42a732e23f797c43f40a3ce6ed39de58e572f9a13d06311a2173c35dcc1123.png" />
+</div>
+</div>
+<section id="image-properties">
+<h3>1.1 Image properties<a class="headerlink" href="#image-properties" title="Link to this heading"></a></h3>
+<p>Before proceeding with further analysis or processing, it is useful to inspect the image dimensions and size. This allows us to understand how the image is represented and determine the number of pixels and channels it contains.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check image dimensions and size</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image size:"</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image width:"</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image height:"</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image mode:"</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image size: (540, 480)
+Image width: 540
+Image height: 480
+Image mode: RGB
+</pre></div>
+</div>
+</div>
+</div>
+<p>For a typical RGB image, <code class="docutils literal notranslate"><span class="pre">image.size</span></code> returns the width and height in pixels (image dimensions), while <code class="docutils literal notranslate"><span class="pre">image.mode</span></code> tells us how the image data is represented.</p>
+<ul class="simple">
+<li><p><strong>RGB</strong>: Each pixel stores three values representing its red, green, and blue components.</p></li>
+<li><p><strong>RGBA</strong>: Adds a fourth alpha channel, which controls the transparency of each pixel. Typically, 0 means fully transparent and 255 means fully opaque.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load and display image</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/numerical-data/penguins.png"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">penguins</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># check image dimensions and size</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image size:"</span><span class="p">,</span> <span class="n">penguins</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image width:"</span><span class="p">,</span> <span class="n">penguins</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image height:"</span><span class="p">,</span> <span class="n">penguins</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image mode:"</span><span class="p">,</span> <span class="n">penguins</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/dcd7cbde2e721b249ba3780d969b1cec35e5eac24054dea20efce9144d6e5867.png" src="../../_images/dcd7cbde2e721b249ba3780d969b1cec35e5eac24054dea20efce9144d6e5867.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image size: (1800, 1074)
+Image width: 1800
+Image height: 1074
+Image mode: RGBA
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pixel-representation">
+<h3>1.2 Pixel representation<a class="headerlink" href="#pixel-representation" title="Link to this heading"></a></h3>
+<p>Once we know the image size and format, we can go a step further and ask: <strong>What makes up an image</strong>? The answer is: <strong>pixels</strong>!</p>
+<ul class="simple">
+<li><p>A pixel, short for “picture element”, is the smallest unit of a digital image. Each pixel contains information about the image, such as its color and brightness.</p></li>
+<li><p>For example, the image shown above has an image size of 1800 × 1074 pixels. This means that the image contains 1800 pixels along the horizontal axis and 1074 pixels along the vertical axis. In other words, the image is made up of a grid containing 1800 columns and 1074 rows of pixels.</p></li>
+</ul>
+<p>Below is the code used to decompose a color image into its three individual color channels (red, green, and blue).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">arrhenius</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/image-data/arrhenius.jpg"</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span> <span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
+
+<span class="c1"># convert image to numpy array and split into three channels</span>
+<span class="n">arrhenius_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">arrhenius_r</span><span class="p">,</span> <span class="n">arrhenius_g</span><span class="p">,</span> <span class="n">arrhenius_b</span> <span class="o">=</span> <span class="n">arrhenius_array</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">arrhenius_array</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">arrhenius_array</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot three channels</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius_r</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Red Channel'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span> <span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius_g</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Greens'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Green Channel'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius_b</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Blues'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Blue Channel'</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span> <span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span> <span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/061cdedf53359fa85b11d59d2d46eb7e61ef494230d13ad6cfffe4c1c2a3925d.png" src="../../_images/061cdedf53359fa85b11d59d2d46eb7e61ef494230d13ad6cfffe4c1c2a3925d.png" />
+</div>
+</div>
+<p>We can also display the pixel values of the 8 × 8 block on the top-left corner of the green channel image. Each value corresponds to the green intensity of an individual pixel in the 8 × 8 block. For an 8-bit RGB image, the pixel intensity values typically range from 0 to 255. A value of 0 represents no intensity in the selected color channel, while 255 represents the maximum intensity.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">arrhenius_g</span><span class="p">[:</span><span class="mi">8</span><span class="p">,</span> <span class="p">:</span><span class="mi">8</span><span class="p">])</span> <span class="c1"># try red and blue channels</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[167 167 168 170 173 175 173 173]
+ [176 174 171 170 172 172 172 171]
+ [172 171 171 173 176 177 177 176]
+ [181 181 179 179 177 173 169 165]
+ [163 163 165 169 175 181 183 185]
+ [164 160 155 152 152 155 156 157]
+ [225 220 211 201 189 177 166 159]
+ [147 159 178 198 215 223 222 221]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="image-resizing-cropping">
+<h2>2. Image Resizing &amp; Cropping<a class="headerlink" href="#image-resizing-cropping" title="Link to this heading"></a></h2>
+<p>Once we obtain the pixel values of an image, we can resize and crop the image to different sizes and shapes according to our requirements.
+Usually, maintaining the original aspect ratio when resizing an image helps prevent distortion, such as stretching or squashing the objects within the image.</p>
+<section id="interpolation-methods-for-image-resizing">
+<h3>2.1 Interpolation methods for image resizing<a class="headerlink" href="#interpolation-methods-for-image-resizing" title="Link to this heading"></a></h3>
+<p>When <strong>resizing</strong> an image, <strong>interpolation</strong> is used to estimate the pixel values that are needed to create the new image dimensions. Common interpolation methods include <em>nearest-neighbor</em>, <em>bilinear</em>, and <em>bicubic</em> interpolation. The choice of interpolation method can affect the quality and appearance of the resized image.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">arrhenius</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/image-data/arrhenius.jpg"</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span> <span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
+
+<span class="c1"># resize while maintaining aspect ratio</span>
+<span class="n">target_width</span> <span class="o">=</span> <span class="mi">224</span> <span class="c1"># change this value to see different effects</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="n">target_width</span> <span class="o">/</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span>
+<span class="n">target_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+
+<span class="c1"># compare different interpolation methods</span>
+<span class="n">nearest</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">target_width</span><span class="p">,</span> <span class="n">target_width</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">)</span>
+<span class="n">bilinear</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">target_width</span><span class="p">,</span> <span class="n">target_width</span><span class="p">),</span><span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">BILINEAR</span><span class="p">)</span>
+<span class="n">bicubic</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">target_width</span><span class="p">,</span> <span class="n">target_width</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">BICUBIC</span><span class="p">)</span>
+<span class="n">lanczos</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">target_width</span><span class="p">,</span> <span class="n">target_width</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">target_width</span><span class="p">,</span> <span class="n">target_width</span><span class="p">),</span><span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">BOX</span><span class="p">)</span>
+
+<span class="c1"># display results</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">nearest</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Nearest"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bilinear</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Bilinear"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bicubic</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Bicubic"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">lanczos</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Lanczos"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">box</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Box"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5092fb51c22775f52dfd2d1b96effcdb356106e1c4e1d3356458fdccc43b1a78.png" src="../../_images/5092fb51c22775f52dfd2d1b96effcdb356106e1c4e1d3356458fdccc43b1a78.png" />
+</div>
+</div>
+</section>
+<section id="cropping-images-at-different-locations">
+<h3>2.2 Cropping images at different locations<a class="headerlink" href="#cropping-images-at-different-locations" title="Link to this heading"></a></h3>
+<p><strong>Cropping</strong> is another important image-processing operation. It removes portions of an image while retaining the region of interest. A <em>center crop</em> extracts a region from the center of the image, whereas a <em>random crop</em> selects a region at a randomly chosen location. These techniques are commonly used in image preprocessing and data augmentation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="n">arrhenius</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/image-data/arrhenius.jpg"</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span> <span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
+
+<span class="n">crop_size</span> <span class="o">=</span> <span class="mi">224</span>
+
+<span class="c1"># top-left</span>
+<span class="n">top_left</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">crop_size</span><span class="p">,</span> <span class="n">crop_size</span><span class="p">))</span>
+
+<span class="c1"># bottom-right</span>
+<span class="n">bottom_right</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span>
+    <span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">crop_size</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">crop_size</span><span class="p">,</span>
+    <span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span>
+<span class="p">))</span>
+
+<span class="c1"># center</span>
+<span class="n">center_crop</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span>
+    <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">crop_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">crop_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="n">crop_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="n">crop_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="p">))</span>
+
+<span class="c1"># multi-scale crop 50%</span>
+<span class="n">crop_scale</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">crop_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">crop_scale</span><span class="p">)</span>
+<span class="n">crop_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">crop_scale</span><span class="p">)</span>
+
+<span class="n">left</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">crop_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">top</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">crop_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">right</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">crop_width</span>
+<span class="n">bottom</span> <span class="o">=</span> <span class="n">top</span> <span class="o">+</span> <span class="n">crop_height</span>
+
+<span class="n">multiscale_crop50</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span>
+    <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span>
+    <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span>
+<span class="p">))</span>
+
+<span class="c1"># random crop</span>
+<span class="n">max_left</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">crop_size</span>
+<span class="n">max_top</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">crop_size</span>
+<span class="n">random_left</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_left</span><span class="p">)</span>
+<span class="n">random_top</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_top</span><span class="p">)</span>
+
+<span class="n">random_crop</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span>
+    <span class="n">random_left</span><span class="p">,</span> <span class="n">random_top</span><span class="p">,</span>
+    <span class="n">random_left</span> <span class="o">+</span> <span class="n">crop_size</span><span class="p">,</span> <span class="n">random_top</span> <span class="o">+</span> <span class="n">crop_size</span>
+<span class="p">))</span>
+
+<span class="c1"># display results</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">top_left</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Top Left"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bottom_right</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Bottom Right"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">center_crop</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Center Crop"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">multiscale_crop50</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Multiscale - 50%"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">random_crop</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Random Crop"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/513b104c3e4baf75057810c87e8bde1797d3c23133d075e4b6606e385be44ee2.png" src="../../_images/513b104c3e4baf75057810c87e8bde1797d3c23133d075e4b6606e385be44ee2.png" />
+</div>
+</div>
+<div class='alert alert-danger'>
+<div class="dropdown questions admonition" id="questions-0">
+<p class="admonition-title"><strong>Why did we resize the image to 224 × 224 pixels</strong>?</p>
+<ul class="simple">
+<li><p>The 224 × 224 pixel dimension is widely used in machine learning and deep learning applications, particularly in image classification models. Using a fixed image size is commonly referred to as <strong>standardizing image dimensions</strong>.</p></li>
+</ul>
+<p>However, there is no single standard dimension for all images. The appropriate size depends on the model, application, and computational resources.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Application/model</p></th>
+<th class="head text-center"><p>Common input size</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>Image classification</p></td>
+<td class="text-center"><p>224 × 224</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Some CNN models</p></td>
+<td class="text-center"><p>224 × 224 or 299 × 299</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>Object detection</p></td>
+<td class="text-center"><p>320 × 320, 640 × 640, etc.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Image generation</p></td>
+<td class="text-center"><p>Often 512 × 512 or higher</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class='alert alert-danger'>
+<div class="dropdown questions admonition" id="questions-1">
+<p class="admonition-title"><strong>Why standardizing image dimensions matter</strong>?</p>
+<ul class="simple">
+<li><p>Larger images preserve more spatial detail but require more memory and computation. Smaller images are faster to process but may lose important details.</p></li>
+<li><p>Standardizing image dimensions ensures that all input images have a consistent shape and size.</p></li>
+<li><p>Therefore, selecting an appropriate standard dimension is a trade-off between image quality, computational cost, and model requirements.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+<section id="pixel-intensity-preprocessing">
+<h2>3. Pixel Intensity Preprocessing<a class="headerlink" href="#pixel-intensity-preprocessing" title="Link to this heading"></a></h2>
+<p>Once the image has been resized and cropped to the required dimensions, the next step is often to prepare and transform the pixel values. This process is known as <strong>image normalization</strong>. The goal is to make the pixel values more suitable for machine learning and deep learning algorithms while, when needed, improving the visual characteristics of the image.</p>
+<section id="normalization-of-pixel-values">
+<h3>3.1 Normalization of pixel values<a class="headerlink" href="#normalization-of-pixel-values" title="Link to this heading"></a></h3>
+<p>As we have seen from previous code examples, for a typical 8-bit RGB image, each pixel channel has an intensity value ranging from 0 to 255. However, using these relatively large values directly is not always ideal for machine learning or deep learning models.
+Therefore, the pixel values should be scaled or normalized to a smaller range. A common approach is to convert the values from the range [0, 255] to [0, 1] by dividing each pixel value by 255. This can improve numerical stability and help machine learning models train more efficiently.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">arrhenius</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"../images/image-data/arrhenius.jpg"</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span> <span class="p">(</span><span class="s1">'RGB'</span><span class="p">)</span>
+
+<span class="c1"># convert image to a NumPy array</span>
+<span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Original pixel range:"</span><span class="p">,</span> <span class="n">pixels</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="s2">"to"</span><span class="p">,</span> <span class="n">pixels</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+<span class="c1"># scale pixel values from [0, 255] to [0, 1]</span>
+<span class="n">scaled_pixels</span> <span class="o">=</span> <span class="n">pixels</span> <span class="o">/</span> <span class="mf">255.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Scaled pixel range:"</span><span class="p">,</span> <span class="n">scaled_pixels</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="s2">"to"</span><span class="p">,</span> <span class="n">scaled_pixels</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original pixel range: 0 to 255
+Scaled pixel range: 0.0 to 1.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another common normalization approach is <em>standardization</em>, as we discussed when handling <a class="reference internal" href="../2-handling-numerical-data/"><span class="std std-doc">numerical data</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># standardize pixel values</span>
+<span class="n">mean</span> <span class="o">=</span> <span class="n">scaled_pixels</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">std</span> <span class="o">=</span> <span class="n">scaled_pixels</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+<span class="n">standardized_pixels</span> <span class="o">=</span> <span class="p">(</span><span class="n">scaled_pixels</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Mean after standardization:"</span><span class="p">,</span> <span class="n">standardized_pixels</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Standard deviation after standardization:"</span><span class="p">,</span> <span class="n">standardized_pixels</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mean after standardization: 1.1228329651517633e-16
+Standard deviation after standardization: 0.9999999999999999
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="c1"># original image</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="c1"># normalized image</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">scaled_pixels</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Normalized: [0, 1]"</span><span class="p">)</span>
+
+<span class="c1"># standardized image</span>
+<span class="n">standardized_display</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">standardized_pixels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray"</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Standardized"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers). Got range [-1.066563483804543..2.1885510847366803].
+</pre></div>
+</div>
+<img alt="../../_images/64e0ba7cc1dc3c6430303793e1311f0f366bdaae725f4ec15c4c7681b4f2202e.png" src="../../_images/64e0ba7cc1dc3c6430303793e1311f0f366bdaae725f4ec15c4c7681b4f2202e.png" />
+</div>
+</div>
+</section>
+<section id="adjustment-of-brightness-and-contrast">
+<h3>3.2 Adjustment of brightness and contrast<a class="headerlink" href="#adjustment-of-brightness-and-contrast" title="Link to this heading"></a></h3>
+<p>In addition to scaling pixel values, image preprocessing can include adjustments to brightness and contrast.</p>
+<ul class="simple">
+<li><p><strong>Brightness</strong> controls the overall intensity of an image. Increasing the brightness makes the image appear lighter, while decreasing it makes the image darker.</p></li>
+<li><p><strong>Contrast</strong> controls the difference between light and dark regions. Increasing contrast makes these differences more pronounced, whereas reducing contrast produces a flatter appearance.</p></li>
+</ul>
+<p>These operations can be useful both for improving image quality and for data augmentation, where variations of the same image are generated to make a model more robust.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># brightness adjustment</span>
+<span class="c1">#</span>
+<span class="c1"># brightness factor:</span>
+<span class="c1"># - =1.0 = original brightness</span>
+<span class="c1"># - &gt;1.0 = brighter</span>
+<span class="c1"># - &lt;1.0 = darker</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageEnhance</span>
+<span class="n">bright_image</span> <span class="o">=</span> <span class="n">ImageEnhance</span><span class="o">.</span><span class="n">Brightness</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span><span class="o">.</span><span class="n">enhance</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">dark_image</span> <span class="o">=</span> <span class="n">ImageEnhance</span><span class="o">.</span><span class="n">Brightness</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span><span class="o">.</span><span class="n">enhance</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bright_image</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Increased Brightness"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dark_image</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Decreased Brightness"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b92c0c867d2793981010bddd434e2a83743cddf5b89b6f4be72bb036c45eadcc.png" src="../../_images/b92c0c867d2793981010bddd434e2a83743cddf5b89b6f4be72bb036c45eadcc.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># contrast adjustment</span>
+<span class="c1">#</span>
+<span class="c1"># contrast factor:</span>
+<span class="c1"># - =1.0 = original contrast</span>
+<span class="c1"># - &gt;1.0 = higher contrast</span>
+<span class="c1"># - &lt;1.0 = lower contrast</span>
+
+<span class="n">high_contrast</span> <span class="o">=</span> <span class="n">ImageEnhance</span><span class="o">.</span><span class="n">Contrast</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span><span class="o">.</span><span class="n">enhance</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">low_contrast</span> <span class="o">=</span> <span class="n">ImageEnhance</span><span class="o">.</span><span class="n">Contrast</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span><span class="o">.</span><span class="n">enhance</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">high_contrast</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"High Contrast"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">low_contrast</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Low Contrast"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/adf5a9f2684dfec7c04aef91eb3440706ee4f8549a0f803f2469715886c9f2e9.png" src="../../_images/adf5a9f2684dfec7c04aef91eb3440706ee4f8549a0f803f2469715886c9f2e9.png" />
+</div>
+</div>
+<p>Another frequently used operation is <strong>grayscale conversion</strong>. A color RGB image contains three channels – red, green, and blue – whereas a grayscale image contains a single intensity channel. Converting an image to grayscale reduces the amount of data that needs to be processed while preserving information about brightness and structure. Grayscale images are particularly useful when color is not important for the task, such as certain applications involving shape, texture, edges, or object structure.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert RGB image to grayscale</span>
+<span class="n">grayscale_image</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"L"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Grayscale dimensions:"</span><span class="p">,</span> <span class="n">grayscale_image</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Grayscale mode:"</span><span class="p">,</span> <span class="n">grayscale_image</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original [0, 255]"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grayscale_image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Grayscale"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">scaled_pixels</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Normalized [0, 1]"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Grayscale dimensions: (540, 480)
+Grayscale mode: L
+</pre></div>
+</div>
+<img alt="../../_images/624bd70c752c61767b7c7728456ff3969aaa7df27ddb7da04c179f119c1d69b7.png" src="../../_images/624bd70c752c61767b7c7728456ff3969aaa7df27ddb7da04c179f119c1d69b7.png" />
+</div>
+</div>
+<div class='alert alert-warning'>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These pixel preprocessing operations – <strong>normalization</strong>, <strong>standardization</strong>, <strong>brightness adjustment</strong>, <strong>contrast enhancement</strong>, and <strong>grayscale conversion</strong> – are important steps in preparing images for machine learning and computer vision applications. The specific operations used depend on the requirements of the dataset and the model being trained.</p>
+</div>
+</div></section>
+</section>
+<section id="geometric-transformations">
+<h2>4. Geometric Transformations<a class="headerlink" href="#geometric-transformations" title="Link to this heading"></a></h2>
+<p>After resizing, cropping, and adjusting the pixel values, we can further transform an image by changing its geometric properties. These operations modify the position, orientation, or shape of objects within an image while preserving much of the original visual information.</p>
+<p><strong>Geometric transformations</strong> are widely used in <strong>image preprocessing</strong> and <strong>data augmentation</strong>, where modified versions of existing images are generated to increase the diversity of the training data and improve the robustness of machine learning models.</p>
+<section id="flipping-and-rotating-images">
+<h3>4.1 Flipping and rotating images<a class="headerlink" href="#flipping-and-rotating-images" title="Link to this heading"></a></h3>
+<p><strong>Flipping</strong> creates a mirror image by reversing the image along the horizontal or vertical axis.</p>
+<ul class="simple">
+<li><p>A horizontal flip is commonly used to simulate changes in left-right orientation.</p></li>
+<li><p>A vertical flip reverses the image from top to bottom.</p></li>
+</ul>
+<p>However, flipping should only be used when the meaning of the image is not affected by the transformation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># horizontal flipping</span>
+<span class="n">horizontal_flip</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">FLIP_LEFT_RIGHT</span><span class="p">)</span>
+<span class="c1"># vertical flipping</span>
+<span class="n">vertical_flip</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">FLIP_TOP_BOTTOM</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">horizontal_flip</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Horizontal Flip"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">vertical_flip</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Vertical Flip"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b8c21f9e7ce10b80208d50d9ee25d9b26f73b9e708d6aa5018af1dbd54c2b482.png" src="../../_images/b8c21f9e7ce10b80208d50d9ee25d9b26f73b9e708d6aa5018af1dbd54c2b482.png" />
+</div>
+</div>
+<p><strong>Image rotation</strong> means turning an image around its center by a certain angle. For example, we can rotate an image 45 degrees to the left or to the right. Rotation is commonly used in image preprocessing and data augmentation, especially when the orientation of an object may vary. By creating rotated versions of an image, we can increase the variety of training data and help a machine-learning model become less sensitive to the orientation of objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># rotate 45 degrees to left</span>
+<span class="n">rotate_left</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># rotate 45 degrees to right</span>
+<span class="n">rotate_right</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rotate_left</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Rotate Left 45°"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">rotate_right</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Rotate Right 45°"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/a1ee2fb2a207d5761115e3b92072497e8f8827f9e8def862eb2c7b406136c5e9.png" src="../../_images/a1ee2fb2a207d5761115e3b92072497e8f8827f9e8def862eb2c7b406136c5e9.png" />
+</div>
+</div>
+</section>
+<section id="translation-and-shearing-images">
+<h3>4.2 Translation and shearing images<a class="headerlink" href="#translation-and-shearing-images" title="Link to this heading"></a></h3>
+<p><strong>Translation</strong> moves the contents of an image horizontally or vertically without changing their size or orientation. For example, an object can be shifted 40 pixels to the right and 80 pixels downward. Translation helps models become less sensitive to the exact position of an object within an image.</p>
+<p><strong>Shearing</strong> shifts different parts of an image by different amounts, producing a slanted or skewed appearance. Unlike rotation, which preserves the angles between lines, shearing changes the geometric relationships between them. Shearing can simulate changes in viewpoint or perspective and can therefore be useful as a data-augmentation technique.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># translation</span>
+<span class="c1"># move image 40 pixels to right and 80 pixels downward</span>
+<span class="n">translated_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">,</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="n">translated_image</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">,</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+
+<span class="c1"># shearing</span>
+<span class="c1"># PIL uses an affine transformation for shearing.</span>
+<span class="c1"># Transformation matrix is:</span>
+<span class="c1"># - x' = x + shear_x * y</span>
+<span class="c1"># - y' = y</span>
+<span class="c1"># Here, shear_x = 0.5</span>
+
+<span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">size</span>
+<span class="n">sheared_image</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span>
+    <span class="n">Image</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">AFFINE</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+     <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">resample</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">BICUBIC</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">translated_image</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Translation"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sheared_image</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Shearing"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f13aff812fedd71c608158e356f59179098b624a7c3905e26e1e9297a25f5b21.png" src="../../_images/f13aff812fedd71c608158e356f59179098b624a7c3905e26e1e9297a25f5b21.png" />
+</div>
+</div>
+</section>
+<section id="affine-transformation">
+<h3>4.3 Affine transformation<a class="headerlink" href="#affine-transformation" title="Link to this heading"></a></h3>
+<p>An <strong>affine transformation</strong> is a more general geometric transformation that combines operations such as translation, rotation, scaling, and shearing. It can be represented mathematically using a transformation matrix. An affine transformation preserves straight lines and parallel lines, although angles, distances, and shapes may change. This makes affine transformations particularly useful for creating realistic variations of training images.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># an affine transformation can combine scaling, shearing, rotation, and translation.</span>
+<span class="c1"># example matrix:</span>
+<span class="c1"># x' = a*x + b*y + c</span>
+<span class="c1"># y' = d*x + e*y + f</span>
+
+<span class="n">affine_image</span> <span class="o">=</span> <span class="n">arrhenius</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span>
+    <span class="n">Image</span><span class="o">.</span><span class="n">Transform</span><span class="o">.</span><span class="n">AFFINE</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
+     <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">resample</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">BICUBIC</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arrhenius</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Original"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">affine_image</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Affine Transformation"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/861e60133da09f1f20b4168d15373a769c4ce65782a97b2583e705a760d4abef.png" src="../../_images/861e60133da09f1f20b4168d15373a769c4ce65782a97b2583e705a760d4abef.png" />
+</div>
+</div>
+<p>These geometric transformations are important because real-world images rarely have identical orientations, positions, or shapes. By applying controlled transformations such as rotation, flipping, translation, and shearing, we can generate more diverse training examples without collecting additional images. Such a process is commonly referred to as <strong>data augmentation</strong>.</p>
+<div class='alert alert-warning'>
+<div class="admonition-callout callout admonition" id="callout-0">
+<p class="admonition-title">Callout</p>
+<p><strong>Data augmentation</strong> is a technique used to artificially increase the diversity of a training dataset by applying controlled transformations to existing images.</p>
+<ul class="simple">
+<li><p>Instead of collecting new images, we create modified versions of the original images while preserving their important visual characteristics.</p></li>
+<li><p>Common image augmentation techniques include horizontal flipping, rotation, cropping, translation, scaling, brightness/contrast adjustment, and adding small amounts of noise.</p></li>
+<li><p>These transformations help a machine-learning model become more robust to variations in image orientation, position, scale, and lighting, which can help reduce overfitting and improve generalization to unseen images.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-warning'>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>One important consideration is that not every augmentation is appropriate for every dataset</strong>. For example, a vertical flip may be inappropriate for photographs of people or buildings because an upside-down image may not represent a realistic situation. Similarly, excessive rotation, cropping, or color changes can alter the meaning of an image rather than simply creating a useful variation.</p>
+</div>
+</div><div class='alert alert-warning'>
+<div class="admonition-augmentation-strategy callout admonition" id="callout-1">
+<p class="admonition-title"><strong>Augmentation strategy</strong></p>
+<ul class="simple">
+<li><p>A regular strategy to perform image augmentations follows the ordr listed below.
+<strong>Original Image → Pixel Representation → Resize/Crop → Intensity/Color Adjustment → Normalization/Standardization → Data Augmentation (Rotation / Flipping / Translation / Shearing) → Model</strong>.</p></li>
+<li><p>The important point is that you don’t necessarily apply every transformation to every image. Instead, transformations are usually selected randomly with specified probabilities and ranges.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+<section id="image-formatting-preprocessing">
+<h2>5. Image Formatting &amp; Preprocessing<a class="headerlink" href="#image-formatting-preprocessing" title="Link to this heading"></a></h2>
+<p>When working with color images, it is important to understand how the color channels are stored and represented. A standard RGB image contains three channels: red, green, and blue. However, different image-processing libraries and machine-learning frameworks may use different channel orderings. For example, PIL and Matplotlib typically use RGB ordering, whereas OpenCV uses BGR ordering by default. Therefore, an image loaded using OpenCV may appear to have incorrect colors if it is displayed directly using a library that expects RGB ordering.</p>
+<p>In addition to channel ordering, the position of the channel dimension can also vary. A typical image-processing representation may use <strong>height × width × channels</strong> (H × W × C), such as in TensorFlow/Keras framework, while many deep-learning frameworks, particularly PyTorch, use <strong>channels × height × width</strong> (C × H × W). Understanding these conventions is important because an incorrect channel order or tensor shape can lead to incorrect model inputs and unexpected results.</p>
+<p>When processing a batch of images, an additional batch dimension is added, resulting in N × C × H × W, where N represents the number of images in the batch.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a simple TensorFlow/Keras example</span>
+<span class="c1"># showing Height × Width × Channels (H × W × C) convention</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># create one RGB image: Height × Width × Channels</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># HWC</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image shape:"</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="c1"># HWC</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image shape: (224, 224, 3)
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Model: "sequential_3"</span>
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold"> Layer (type)                    </span>┃<span style="font-weight: bold"> Output Shape           </span>┃<span style="font-weight: bold">       Param # </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ conv2d_3 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">222</span>, <span style="color: #00af00; text-decoration-color: #00af00">222</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">896</span> │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Total params: </span><span style="color: #00af00; text-decoration-color: #00af00">896</span> (3.50 KB)
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">896</span> (3.50 KB)
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Non-trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">0</span> (0.00 B)
+</pre>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a simple PyTorch example</span>
+<span class="c1"># showing Channels × Height × Width (C × H × W) convention</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<span class="c1"># create one RGB image: Channels × Height × Width</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>  <span class="c1"># CHW</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Image shape:"</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image shape: torch.Size([3, 224, 224])
+Sequential(
+  (0): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1))
+)
+</pre></div>
+</div>
+</div>
+</div>
+<div class='alert alert-info'>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Load and explore image data, including image dimensions, color modes, channels, and pixel values.</p></li>
+<li><p>Resize and crop images using different interpolation methods and cropping strategies to obtain the required image dimensions and regions of interest.</p></li>
+<li><p>Transform and normalize pixel values through normalization, standardization, brightness and contrast adjustment, and grayscale conversion.</p></li>
+<li><p>Apply geometric transformations and data augmentation, including rotation, flipping, translation, shearing, and affine transformations.</p></li>
+<li><p>Format and preprocess images for deep learning, including channel ordering, tensor dimensions, and batch representations such as H × W × C and N × C × H × W.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../5-wrangling-text-data/" class="btn btn-neutral float-left" title="Wrangling Text Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 | ENCCS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

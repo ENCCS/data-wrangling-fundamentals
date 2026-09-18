@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting to Know Your Data &mdash; Practical Data Wrangling</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Handling Numerical Data" href="../2-handling-numerical-data/" />
+    <link rel="prev" title="Setting Up Programming Environment" href="../../env/0-setting-up/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            Practical Data Wrangling
+              <img src="../../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting to Know Your Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#big-data">1. Big Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-type-format-and-storage">2. Data Type, Format, and Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-type">2.1 Data type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-format">2.2 Data format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-storage">2.3 Data storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-wrangling">3. Data Wrangling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../3-processing-categorical-data/">Processing Categorical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4-exploring-dates-times-and-time-series-data/">Exploring Dates, Times, and Time-Series Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6-transforming-image-data/">Transforming Image Data</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">Practical Data Wrangling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting to Know Your Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/data-wrangling-fundamentals/blob/main/content/episodes/1-getting-to-know-your-data.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-to-know-your-data">
+<h1>Getting to Know Your Data<a class="headerlink" href="#getting-to-know-your-data" title="Link to this heading"></a></h1>
+<p>Every day, we come across large amounts of data in many different types and formats. Data may appear as numbers and categories in spreadsheets, time-series measurements from sensors, text in documents, events and logs generated by applications, or multimedia such as images, audio, and video. Understanding how to effectively organize, process, and prepare these diverse forms of data is essential for meaningful analysis, reliable decision-making, and successful machine learning and data science projects. Before we can analyze or model data, we first need to understand what kind of data we have, where it comes from, how it is represented, and how it is stored.</p>
+<p>In this episode, we will provide a general overview of <strong>big data</strong>, <strong>data types</strong>, <strong>data formats</strong>, <strong>data storage</strong>, and <strong>data wrangling</strong>. We will explore the different forms of data that data practitioners commonly encounter, discuss structured, semi-structured, and unstructured data, and introduce common formats and storage approaches. We will then introduce data wrangling and examine why cleaning, transforming, integrating, and validating data are important steps in turning raw data into analysis-ready data.</p>
+<div class='alert alert-info'>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Describe the concept of big data and explain its key characteristics and challenges.</p></li>
+<li><p>Identify and distinguish common types of data, including numerical, categorical, time-series, text, event/log, image, audio, video, graph, and multimodal data.</p></li>
+<li><p>Recognize common data formats, sources, and storage approaches used to represent and manage different types of data.</p></li>
+<li><p>Explain what data wrangling is and why it is important for transforming raw data into clean, reliable, and analysis-ready data.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-success'>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>20 minutes teaching</p></li>
+<li><p>10 minutes discussion</p></li>
+</ul>
+</div>
+</div><section id="big-data">
+<h2>1. Big Data<a class="headerlink" href="#big-data" title="Link to this heading"></a></h2>
+<div class='alert alert-warning'>
+<div class="admonition-discussion discussion important admonition" id="discussion-0">
+<p class="admonition-title">Discussion</p>
+<ul class="simple">
+<li><p>How large is the data you are working with?</p></li>
+<li><p>Are you experiencing performance bottlenecks when you try to analyse it?</p></li>
+</ul>
+</div>
+</div><p>Every day, we encounter countless events that generate data – an e-commerce transaction, a hospital record, a sensor reading, a LinkedIn/X post, or a customer interaction. At the same time, modern organizations continuously produce enormous amounts of data from websites, mobile applications, business systems, IoT devices, social media, and other digital platforms.
+As these individual data-generating activities occur at an ever-increasing scale, speed, and variety, the challenge is no longer simply about having data, but about managing and making sense of massive and diverse datasets. This growing phenomenon is what we commonly refer to as <strong>Big Data</strong>.</p>
+<p>Big Data is commonly described through the <strong>Four Vs</strong>, which highlight the main characteristics that make Big Data different from traditional datasets:</p>
+<ul class="simple">
+<li><p><strong>Volume</strong> refers to the enormous amount of data generated and stored every day. Modern organizations can produce data at a scale ranging from gigabytes and terabytes to petabytes and beyond.</p></li>
+<li><p><strong>Variety</strong> refers to the wide range of forms and formats in which data is generated. Data can be <em>structured</em>, such as tables and transaction records; <em>semi-structured</em>, such as JSON and XML; or <em>unstructured</em>, such as text, images, audio, video, and social media content.</p></li>
+<li><p><strong>Velocity</strong> refers to the speed at which data is generated, collected, transmitted, and processed. Many modern systems continuously produce data in real time, such as IoT sensors, GPS signals, financial transactions, and social media activity.</p></li>
+<li><p><strong>Veracity</strong> refers to the quality, accuracy, reliability, and trustworthiness of data. Because Big Data is collected from many different sources, it may contain missing values, duplicates, noise, errors, inconsistencies, or biased information. Ensuring data veracity is therefore essential for producing reliable analysis and meaningful insights.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="s2">"../images/fundamental-data/big-data-4vs.png"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1024</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../_images/5bbe01cfa78b7f5fa16fa4b742f6aae7ffa745115f673892f0702b52fc495154.png"><img alt="../../_images/5bbe01cfa78b7f5fa16fa4b742f6aae7ffa745115f673892f0702b52fc495154.png" src="../../_images/5bbe01cfa78b7f5fa16fa4b742f6aae7ffa745115f673892f0702b52fc495154.png" style="width: 1024px;" />
+</a>
+</div>
+</div>
+<p>Because of issues with data veracity, <strong>Big Data is often raw, noisy, and unreliable, meaning that it is rarely ready for analysis when we first receive it</strong>. Therefore, before Big Data can be transformed into meaningful insights, it must first be <em>collected</em>, <em>cleaned</em>, <em>integrated</em>, <em>transformed</em>, and <em>prepared</em> to ensure that it is accurate, consistent, reliable, and suitable for analysis.</p>
+</section>
+<section id="data-type-format-and-storage">
+<h2>2. Data Type, Format, and Storage<a class="headerlink" href="#data-type-format-and-storage" title="Link to this heading"></a></h2>
+<p>As data is generated, observed, measured, and collected from a wide range of sources, it can appear in many different forms. For example, a customer record may contain a name, age, and purchase amount; a sensor may produce temperature readings over time; a social media platform may collect text, images, and videos; and a healthcare system may store patient records and medical measurements. When we talk about data, two key concepts are <strong>data type</strong> and <strong>data format</strong>. Although these terms are closely related, they describe different aspects of data and should not be used interchangeably.</p>
+<section id="data-type">
+<h3>2.1 Data type<a class="headerlink" href="#data-type" title="Link to this heading"></a></h3>
+<p>A data type describes the kind of value or information that the data represents and determines how that value can be interpreted and processed. <strong>Common data types include numeric, categorical, textual, Boolean, date/time, and spatial data</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="s2">"../images/fundamental-data/all-data-types.png"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1024</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../_images/3462243b673c882a67f4de9ff7b95b805541cea96852a1d02ce026e5bdd42bc9.png"><img alt="../../_images/3462243b673c882a67f4de9ff7b95b805541cea96852a1d02ce026e5bdd42bc9.png" src="../../_images/3462243b673c882a67f4de9ff7b95b805541cea96852a1d02ce026e5bdd42bc9.png" style="width: 1024px;" />
+</a>
+</div>
+</div>
+<p>Even though we have many different data types, at the most fundamental level, all data stored and processed by a computer is ultimately represented as <strong>bits</strong> and <strong>bytes</strong>. The smallest unit of digital information is a bit, which can have only two possible values: 0 or 1. Typically, eight bits are grouped together to form a byte. A single byte contains 8 bits and can represent up to 256 distinct values (from 0 to 255).</p>
+<p>For example, consider the 8-bit binary sequence <code class="docutils literal notranslate"><span class="pre">01000001</span></code> stored in a computer. If we interpret this bit pattern as an unsigned integer, it represents the number <code class="docutils literal notranslate"><span class="pre">65</span></code>. However, if we interpret the same bit pattern using the ASCII character encoding, it represents the character <code class="docutils literal notranslate"><span class="pre">A</span></code>. This illustrates an important idea: <strong>bits themselves do not inherently tell us whether the data represents a number, a character, or something else, and the interpretation depends on how the bits are encoded and how the computer is instructed to read them</strong>.</p>
+<p>In the same way, a sequence of bytes stored in a computer can be interpreted as numbers or characters, depending on the encoding and data format being used. From these fundamental representations, we can construct and interpret many other data types. For example, numbers can be used to represent measurements, quantities, or numerical values, while characters and text can be combined to represent words, sentences, and other textual information. More complex data types, such as categorical data, Boolean values, dates and times, and time series, can also ultimately be represented using combinations of numbers and characters.</p>
+<p>Therefore, at the computer level, <strong>numbers and characters (or text) form fundamental building blocks for representing data</strong>. Higher-level data types are created by assigning meaning and structure to these basic representations.
+In other words, although we work with many different data types at the application or analytical level, they are ultimately encoded and stored as patterns of bits and bytes at the computer level.</p>
+<p>In our daily lives, we often come across another important concept when working with data: <strong>metadata</strong>. Metadata is essentially “data about data” – it is information that describes the characteristics, structure, meaning, source, or context of a piece of data. For example, when we take a photo, the image itself is the data, while information such as the date and time it was taken, the location, camera model, image dimensions, and file size can be considered metadata. Metadata is different from a data type, which describes what kind of value the data represents, such as a number, text, Boolean value, or date/time. In simple terms, <strong>data type tells us what the data is</strong>, while <strong>metadata provides additional information that helps us understand, describe, and manage the data</strong>.</p>
+</section>
+<section id="data-format">
+<h3>2.2 Data format<a class="headerlink" href="#data-format" title="Link to this heading"></a></h3>
+<p>By organizing bits and bytes in different ways and interpreting them according to specific rules or encoding schemes, computers can represent, store, and process a wide variety of <strong>data formats</strong>. A data format describes how data is structured, organized, represented, and stored so that it can be understood and processed by computers and software systems.
+Common examples include CSV, JSON, XML, Parquet, and Excel files for structured or semi-structured data, as well as image, audio, and video formats for multimedia data.</p>
+<p>Different data formats and structures are suited to different types of data and analytical tasks:</p>
+<ul class="simple">
+<li><p><strong>Tabular data</strong> organizes information into rows and columns and is commonly stored in formats such as CSV and Excel. Numerical data can also be represented as arrays, including scalars (0D), vectors (1D), matrices (2D), and tensors (3D or higher), which support mathematical and computational operations.</p></li>
+<li><p><strong>Textual data</strong> represents information as sequences of characters, including letters, numbers, symbols, and punctuation. It can be structured, semi-structured, or unstructured. Structured or semi-structured text is commonly stored in formats such as JSON and XML, while text can also be embedded in formats such as Parquet.</p></li>
+<li><p><strong>Images</strong>, <strong>video</strong>, and <strong>audio</strong> represent visual and auditory information. Images are typically represented as arrays of pixels, videos as sequences of image frames over time, and audio as time-series signals. Common file formats include JPEG/PNG, MP4, and WAV/MP3, respectively.</p></li>
+<li><p><strong>Graphs and networks</strong> represent relationships between entities using nodes (vertices) and edges (connections). They are commonly used to model social networks, molecular interactions, transportation systems, and other complex relationships, and can be stored using formats such as GraphML, GEXF, and GML.</p></li>
+</ul>
+<div class='alert alert-info'>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In simple terms, <strong>data type</strong> tells us what the data means, while <strong>data format</strong> tells us how the data is represented or stored. For example, a temperature measurement may have a numeric data type, while the same measurement could be stored in CSV, JSON, or Parquet format.</p>
+<p>Thus, data type and data format are related but distinct:</p>
+<ul class="simple">
+<li><p>type describes the nature of the information;</p></li>
+<li><p>format describes its representation.</p></li>
+</ul>
+</div>
+</div></section>
+<section id="data-storage">
+<h3>2.3 Data storage<a class="headerlink" href="#data-storage" title="Link to this heading"></a></h3>
+<p><strong>Data storage</strong> refers to how data is physically or digitally organized and maintained so that it can be accessed, processed, and preserved by a computer system. At the most fundamental level, computers store data as bits and bytes, but these bits and bytes can be organized using different storage mechanisms and formats depending on the type and purpose of the data.</p>
+<p>For example, data may be stored in files such as CSV, JSON, Excel, or Parquet; in databases such as relational or NoSQL databases; or in specialized storage systems for images, audio, video, and graph data. Thus, <strong>data storage describes where and how data is kept</strong>, while a <strong>data storage format describes how that data is organized and encoded within the storage system</strong>.</p>
+<p>Below is an overview of common data formats (✅ for <em>good</em>, 🟨 for <em>ok/depends on a case</em>, and ❌ for <em>bad</em>) adapted from Aalto university’s <a class="reference external" href="https://aaltoscicomp.github.io/python-for-scicomp/work-with-data/#what-is-a-data-format"><strong>Python for scientific computing</strong></a>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Name</p></th>
+<th class="head text-center"><p>Human <br>readable</p></th>
+<th class="head text-center"><p>Space <br>efficiency</p></th>
+<th class="head text-center"><p>Arbitrary <br>data</p></th>
+<th class="head text-center"><p>Tidy <br>data</p></th>
+<th class="head text-center"><p>Array <br>data</p></th>
+<th class="head text-center"><p>Long term <br>storage/sharing</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>CSV</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Excel</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>🟨</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>JSON</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Pickle</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>❌</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>npy</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Feather</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>HDF5</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>NetCDF4</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>Parquet</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>Graph formats</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>🟨</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p>✅</p></td>
+</tr>
+</tbody>
+</table>
+<div class='alert alert-warning'>
+<div class="admonition-callout callout admonition" id="callout-0">
+<p class="admonition-title">Callout</p>
+<p><strong>There isn’t one data storage format that works in all cases, so choose a file format that best suits your data</strong>. Choice of format affects storage efficiency, speed of access, compatibility with tools, and ease of use for humans.</p>
+</div>
+</div><div class='alert alert-warning'>
+<div class="admonition-discussion discussion important admonition" id="discussion-1">
+<p class="admonition-title">Discussion</p>
+<ul class="simple">
+<li><p>What types of data do you work with in your research? For example, numerical, textual, image, audio, or time-series data?</p></li>
+<li><p>How do you use these data in your research? For example, do you use them for analysis, visualization, or publication?</p></li>
+<li><p>Do you use your data to train large language models (LLMs), develop machine learning models, or perform other research tasks?</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+<section id="data-wrangling">
+<h2>3. Data Wrangling<a class="headerlink" href="#data-wrangling" title="Link to this heading"></a></h2>
+<p>No matter how data is structured, represented, encoded, or organized, <strong>raw data is rarely ready to be used directly for analysis or to generate meaningful insights</strong>. It may contain missing values, errors, duplicates, inconsistencies, noise, or irrelevant information, especially when it is collected from multiple sources. Therefore, raw data needs to be carefully prepared to improve its quality, consistency, reliability, and usability before analysis.</p>
+<p><strong>Data wrangling</strong> is the process of preparing raw data for analysis by cleaning, integrating, transforming, and preprocessing it. It may involve handling missing or incorrect values, removing duplicates, combining data from different sources, converting data into appropriate formats, and restructuring datasets to meet analytical requirements. The <strong>goal of data wrangling is to transform raw, messy data into clean, consistent, and analysis-ready data</strong> so that it can support reliable analysis and meaningful insights.</p>
+<p>The exact steps vary by project, but commonly include:</p>
+<ul class="simple">
+<li><p><strong>Data discovery and understanding</strong> – Inspecting the data to understand its structure, variables, data types, sources, and quality.</p></li>
+<li><p><strong>Data cleaning</strong> – Handling missing values, duplicates, errors, outliers, inconsistent values, and other quality problems.</p></li>
+<li><p><strong>Data integration</strong> – Combining data from multiple sources, such as databases, CSV files, APIs, or sensor systems, and resolving differences between them.</p></li>
+<li><p><strong>Data transformation</strong> – Changing data into a suitable form, such as converting data types, scaling numerical values, encoding categorical variables, or transforming variables.</p></li>
+<li><p><strong>Data restructuring</strong> – Rearranging the organization of data, such as merging, joining, splitting, pivoting, or reshaping tables.</p></li>
+<li><p><strong>Data reduction or filtering</strong> – Removing irrelevant records, variables, or unnecessary information to create a more manageable dataset.</p></li>
+<li><p><strong>Data validation</strong> – Checking that the resulting data is accurate, consistent, complete, and logically valid.</p></li>
+<li><p><strong>Data preparation</strong> – Organizing and formatting the final dataset so that it is ready for statistical analysis, visualization, machine learning, or other downstream tasks.</p></li>
+</ul>
+<p>In the following episodes, we will explore several of these data-wrangling steps across different types of data, including numerical, categorical, time-series, text, event/log, and image data. We will see how the characteristics of each data type influence the way we inspect, clean, transform, integrate, and prepare the data for analysis. By working with these different examples, we will develop a practical understanding of how raw data can be systematically transformed into clean, consistent, reliable, and analysis-ready datasets.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../env/0-setting-up/" class="btn btn-neutral float-left" title="Setting Up Programming Environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../2-handling-numerical-data/" class="btn btn-neutral float-right" title="Handling Numerical Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 | ENCCS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

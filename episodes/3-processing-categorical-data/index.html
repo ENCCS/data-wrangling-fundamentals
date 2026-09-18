@@ -1,0 +1,990 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processing Categorical Data &mdash; Practical Data Wrangling</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Exploring Dates, Times, and Time-Series Data" href="../4-exploring-dates-times-and-time-series-data/" />
+    <link rel="prev" title="Handling Numerical Data" href="../2-handling-numerical-data/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            Practical Data Wrangling
+              <img src="../../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../1-getting-to-know-your-data/">Getting to Know Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Processing Categorical Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-with-categorical-data">1. Getting Started with Categorical Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding-nominal-categorical-features">2. Encoding Nominal Categorical Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#one-hot-encoding-ohe">2.1 One-hot encoding (OHE)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#label-encoding">2.2 Label encoding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding-ordinal-categorical-features">3. Encoding Ordinal Categorical Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding-dictionaries-of-features">4. Encoding Dictionaries of Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imputing-missing-class-values">5. Imputing Missing Class Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding-strategies">6. Encoding Strategies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../4-exploring-dates-times-and-time-series-data/">Exploring Dates, Times, and Time-Series Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6-transforming-image-data/">Transforming Image Data</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">Practical Data Wrangling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Processing Categorical Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/data-wrangling-fundamentals/blob/main/content/episodes/3-processing-categorical-data.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="processing-categorical-data">
+<h1>Processing Categorical Data<a class="headerlink" href="#processing-categorical-data" title="Link to this heading"></a></h1>
+<p>It is often useful to measure objects not in terms of their quantity but in terms of some quality. In data analysis, these qualities are often represented as <strong>categorical features</strong>, which describe characteristics using distinct groups or categories rather than numerical values. Categorical data can generally be divided into <strong>nominal categories</strong>, which have no inherent order (such as red, blue, green), and <strong>ordinal categories</strong>, where the categories follow a meaningful ranking or order (such as low, medium, high). Although categorical features are common in real-world datasets, typical applications require them to be represented in a numerical form.</p>
+<p>In this episode, we will focus on several important techniques for processing categorical data. We will explore how to encode nominal and ordinal categorical features, work with dictionaries of features, and impute missing class. Understanding these techniques is essential for preparing categorical data effectively and ensuring that it can be used reliably in machine learning models.</p>
+<div class='alert alert-info'>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Understand the difference between nominal and ordinal categorical features.</p></li>
+<li><p>Learn how to encode categorical features for machine learning.</p></li>
+<li><p>Understand how to work with dictionaries of features.</p></li>
+<li><p>Learn techniques for handling missing categorical values.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-success'>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 minutes teaching</p></li>
+<li><p>15 minutes exercising/discussion</p></li>
+</ul>
+</div>
+</div><section id="getting-started-with-categorical-data">
+<h2>1. Getting Started with Categorical Data<a class="headerlink" href="#getting-started-with-categorical-data" title="Link to this heading"></a></h2>
+<p><strong>Categorical data</strong> refers to data that represents the qualities, characteristics, or groups of an observation rather than a numerical quantity. Instead of measuring something with a number, categorical variables describe which category an observation belongs to. For example, a person’s gender, a product type, or a customer’s satisfaction level can all be represented as categorical data.</p>
+<p>Categorical features are commonly divided into two main types: nominal and ordinal.</p>
+<ul class="simple">
+<li><p><strong>Nominal categories</strong> have no natural order, such as colors or product types.</p></li>
+<li><p><strong>Ordinal categories</strong> have a meaningful order, such as low, medium, and high.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">'../images/categorical-data/categorical-data.png'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1024</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="../../_images/00e274382ac856dcc01c0932cd5ac2a4ec68ea0b19805a03b9444a25312d85de.png"><img alt="../../_images/00e274382ac856dcc01c0932cd5ac2a4ec68ea0b19805a03b9444a25312d85de.png" src="../../_images/00e274382ac856dcc01c0932cd5ac2a4ec68ea0b19805a03b9444a25312d85de.png" style="width: 1024px;" />
+</a>
+</div>
+</div>
+<p>When working with categorical data in data analysis and machine learning, these features often need to be transformed into a format that algorithms can understand.
+Typically, <strong>categorical data should be represented using numerical values rather than raw strings</strong>, allowing relevant algorithms to process and analyze these features effectively.
+This may involve using different encoding techniques for nominal and ordinal features, representing categorical information using dictionaries of features, and dealing with practical issues such as missing class values.</p>
+</section>
+<section id="encoding-nominal-categorical-features">
+<h2>2. Encoding Nominal Categorical Features<a class="headerlink" href="#encoding-nominal-categorical-features" title="Link to this heading"></a></h2>
+<p>Below are some representative examples of nominal categorical features.</p>
+<ul class="simple">
+<li><p>color: Red, Blue, Green</p></li>
+<li><p>city: Stockholm, Uppsala, Lund, Linkoping</p></li>
+</ul>
+<p>A key characteristic of nominal features is that they have <strong>no inherent order or ranking</strong>, and there is <strong>no meaningful numerical relationship between their categories</strong>.
+In other words, we cannot say that one category is better, more important, or higher than another; the categories simply represent different groups or labels.</p>
+<section id="one-hot-encoding-ohe">
+<h3>2.1 One-hot encoding (OHE)<a class="headerlink" href="#one-hot-encoding-ohe" title="Link to this heading"></a></h3>
+<p>How can we represent this information numerically without introducing a false ordering between the categories? This naturally leads us to <strong>one-hot encoding</strong> (OHE).</p>
+<ul class="simple">
+<li><p>OHE is a technique that converts each category into a separate binary feature, typically represented as 0 or 1.</p></li>
+<li><p>OHE is well supported in scikit-learn, and below are some code snippets demonstrating how to encode nominal categorical features.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">city_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"city"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Stockholm"</span><span class="p">,</span> <span class="s2">"Linkoping"</span><span class="p">,</span> <span class="s2">"Lund"</span><span class="p">,</span> <span class="s2">"Stockholm"</span><span class="p">,</span> <span class="s2">"Uppsala"</span><span class="p">,</span> <span class="s2">"Linkoping"</span><span class="p">]})</span>
+<span class="n">city_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>city</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Stockholm</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Linkoping</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Lund</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Stockholm</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Uppsala</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Linkoping</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>OHE is implemented in scikit-learn using the <code class="docutils literal notranslate"><span class="pre">OneHotEncoder</span></code> class.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OneHotEncoder</span>
+
+<span class="n">ohe_encoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">ohe_encoder</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">city_df</span><span class="p">[[</span><span class="s2">"city"</span><span class="p">]])</span>
+<span class="n">city_names</span> <span class="o">=</span> <span class="n">ohe_encoder</span><span class="o">.</span><span class="n">categories_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">city_names</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="n">city_ohe</span> <span class="o">=</span> <span class="n">ohe_encoder</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">city_df</span><span class="p">[[</span><span class="s2">"city"</span><span class="p">]])</span>
+<span class="n">city_ohe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">city_ohe</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">city_names</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">city_df_ohe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">city_df</span><span class="p">,</span> <span class="n">city_ohe</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">city_df_ohe</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['Linkoping' 'Lund' 'Stockholm' 'Uppsala'] 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>city</th>
+      <th>Linkoping</th>
+      <th>Lund</th>
+      <th>Stockholm</th>
+      <th>Uppsala</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Stockholm</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Linkoping</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Lund</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Stockholm</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Uppsala</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Linkoping</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>In the preceding code snippets, <code class="docutils literal notranslate"><span class="pre">fit_transform()</span></code> is a two-step operation.</p>
+<ul class="simple">
+<li><p>First, <code class="docutils literal notranslate"><span class="pre">fit</span></code> means that the transformer learns necessary information from data. In this case, it means identifying the list of unique categories in the data.</p></li>
+<li><p>Then, <code class="docutils literal notranslate"><span class="pre">transform</span></code> means that the transformer uses what it has learned to convert the data into the desired representation. Here, it converts each category into its corresponding OHE representation.</p></li>
+<li><p>Therefore, <code class="docutils literal notranslate"><span class="pre">fit_transform()</span></code> performs both steps at once: it first learns from the data and then transforms that same data using the information it has learned.</p></li>
+</ul>
+<div class='alert alert-warning'>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After OHE encoding, we typically obtain a sparse matrix, where most of the entries are 0s. For a small dataset with a limited number of features, such a matrix is relatively easy to handle. However, for <strong>high-cardinality features</strong>, which are categorical features containing a large number of unique categories, using OHE can become problematic because each unique category creates a new column.</p>
+<p>For example, if a dataset contains 100,000 unique product IDs, OHE could create 100,000 additional columns, resulting in a very large and mostly sparse matrix. To address this issue, sparse matrix representations store only the non-zero values and their corresponding positions rather than explicitly storing all the zeros. This can significantly reduce memory usage and improve computational efficiency when working with high-dimensional categorical data.</p>
+</div>
+</div></section>
+<section id="label-encoding">
+<h3>2.2 Label encoding<a class="headerlink" href="#label-encoding" title="Link to this heading"></a></h3>
+<p>If we want to avoid creating a large sparse matrix, we can use <strong>label encoding</strong> to transform categorical data. Label encoding transforms a categorical feature into a single numerical column by assigning a unique integer to each category. This produces a much more compact representation and can be more memory-efficient, especially when feature contains a large number of unique categories.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="n">lb_encoder</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+
+<span class="n">city_lb</span> <span class="o">=</span> <span class="n">lb_encoder</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">city_df</span><span class="p">[</span><span class="s2">"city"</span><span class="p">])</span>
+<span class="n">city_lb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">city_lb</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"LB_encoded"</span><span class="p">])</span>
+
+<span class="n">city_df_ohe_lb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">city_df_ohe</span><span class="p">,</span> <span class="n">city_lb</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">city_df_ohe_lb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>city</th>
+      <th>Linkoping</th>
+      <th>Lund</th>
+      <th>Stockholm</th>
+      <th>Uppsala</th>
+      <th>LB_encoded</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Stockholm</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Linkoping</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Lund</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Stockholm</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Uppsala</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Linkoping</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>However, label encoding introduces an <strong>artificial ordinal relationship</strong> between categories.
+For example, assigning a larger value to Uppsala than Linköping may incorrectly imply that Uppsala is somehow greater or more important than Linköping.
+This relationship may not be meaningful and can negatively affect algorithms that assume numerical values have an inherent order. Therefore, we need to take this limitation into consideration when choosing and interpreting the encoding method.</p>
+</section>
+</section>
+<section id="encoding-ordinal-categorical-features">
+<h2>3. Encoding Ordinal Categorical Features<a class="headerlink" href="#encoding-ordinal-categorical-features" title="Link to this heading"></a></h2>
+<p>However, if categorical features have a natural and meaningful ordering, such as student performance levels classified as Low, Medium, and High, ordinal encoding can be a good choice. It is important to assign numerical values based on prior knowledge of the ordinal categories and their relationships. For example, assigning Low = 1, Medium = 2, and High = 3 implicitly suggests that the intervals between the categories are equal.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrdinalEncoder</span>
+
+<span class="n">score_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"Score"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"High"</span><span class="p">]})</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">OrdinalEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="p">[[</span><span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"High"</span><span class="p">]])</span>
+
+<span class="n">score_df</span><span class="p">[</span><span class="s2">"Score_Encoded"</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">score_df</span><span class="p">[[</span><span class="s2">"Score"</span><span class="p">]])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Score  Score_Encoded
+0     Low              1
+1     Low              1
+2  Medium              2
+3  Medium              2
+4    High              3
+</pre></div>
+</div>
+</div>
+</div>
+<p>While this assumption may be reasonable in many cases, <strong>it can be misleading when the distances between ordinal categories are not equal</strong>.
+For example, suppose we have a category called “Barely More Than Medium”, which is only slightly higher than Medium. In this case, we need to carefully consider the numerical values assigned to each category. The interval between Low and Medium may be substantially larger than the interval between Medium and Barely More Than Medium.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">score_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"Score"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"High"</span><span class="p">,</span> <span class="s2">"Barely More Than Medium"</span><span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">OrdinalEncoder</span><span class="p">(</span>
+    <span class="n">categories</span><span class="o">=</span><span class="p">[[</span><span class="s2">"Low"</span><span class="p">,</span> <span class="s2">"Medium"</span><span class="p">,</span> <span class="s2">"Barely More Than Medium"</span><span class="p">,</span> <span class="s2">"High"</span><span class="p">]]</span>
+<span class="p">)</span>
+
+<span class="n">score_df</span><span class="p">[</span><span class="s2">"Score_Encoded"</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">score_df</span><span class="p">[[</span><span class="s2">"Score"</span><span class="p">]])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                     Score  Score_Encoded
+0                      Low              1
+1                      Low              1
+2                   Medium              2
+3                   Medium              2
+4                     High              4
+5  Barely More Than Medium              3
+</pre></div>
+</div>
+</div>
+</div>
+<p>In such cases, it may be more appropriate to use a <strong>custom dictionary mapping</strong> rather than <code class="docutils literal notranslate"><span class="pre">OrdinalEncoder</span></code>.
+A dictionary allows us to explicitly assign numerical values that better reflect the actual relationships between the ordinal categories, based on domain knowledge.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">score_mapping</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"Low"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"Medium"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"Barely More Than Medium"</span><span class="p">:</span> <span class="mf">2.2</span><span class="p">,</span>
+    <span class="s2">"High"</span><span class="p">:</span> <span class="mi">3</span>
+<span class="p">}</span>
+
+<span class="n">score_df</span><span class="p">[</span><span class="s2">"Score_Encoded"</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_df</span><span class="p">[</span><span class="s2">"Score"</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">score_mapping</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                     Score  Score_Encoded
+0                      Low            1.0
+1                      Low            1.0
+2                   Medium            2.0
+3                   Medium            2.0
+4                     High            3.0
+5  Barely More Than Medium            2.2
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="encoding-dictionaries-of-features">
+<h2>4. Encoding Dictionaries of Features<a class="headerlink" href="#encoding-dictionaries-of-features" title="Link to this heading"></a></h2>
+<p>A dictionary is a widely used data structure for storing data as key–value pairs. This representation is particularly common in natural language processing (NLP). For example, we might have a collection of documents, where each document is represented by a dictionary containing each word as a key and the number of times that word appears in the document as its value.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create word count dictionaries for four documents</span>
+<span class="n">doc_1_word_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Red"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"Green"</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">doc_2_word_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Green"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">"Blue"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">doc_3_word_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Yellow"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"Red"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">doc_4_word_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Orange"</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"Yellow"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="n">doc_word_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc_1_word_count</span><span class="p">,</span> <span class="n">doc_2_word_count</span><span class="p">,</span> <span class="n">doc_3_word_count</span><span class="p">,</span> <span class="n">doc_4_word_count</span><span class="p">]</span>
+<span class="n">doc_word_counts</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{'Red': 2, 'Green': 4},
+ {'Green': 4, 'Blue': 3},
+ {'Yellow': 2, 'Red': 1},
+ {'Orange': 5, 'Yellow': 3}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>However, when performing data analysis or applying machine learning algorithms, we typically expect the data to be represented as a feature matrix.</p>
+<p>Using <strong>DictVectorizer</strong> from scikit-learn, we can easily transform a collection of dictionaries into a feature matrix, where each unique word becomes a feature and each matrix entry represents the number of times that word appears in a particular document.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.feature_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictVectorizer</span>
+
+<span class="c1"># create dictionary vectorizer</span>
+<span class="n">dictvectorizer</span> <span class="o">=</span> <span class="n">DictVectorizer</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># convert list of word count dictionaries into feature matrix</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">dictvectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">doc_word_counts</span><span class="p">)</span>
+<span class="n">features</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0., 4., 0., 2., 0.],
+       [3., 4., 0., 0., 0.],
+       [0., 0., 0., 1., 2.],
+       [0., 0., 5., 0., 3.]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get feature names</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="n">dictvectorizer</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()</span>
+<span class="n">feature_names</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array(['Blue', 'Green', 'Orange', 'Red', 'Yellow'], dtype=object)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">doc_word_counts_dictvec</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> 
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">"doc_1_word_count"</span><span class="p">,</span>
+        <span class="s2">"doc_2_word_count"</span><span class="p">,</span>
+        <span class="s2">"doc_3_word_count"</span><span class="p">,</span>
+        <span class="s2">"doc_4_word_count"</span>
+    <span class="p">],</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">feature_names</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">doc_word_counts_dictvec</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Blue</th>
+      <th>Green</th>
+      <th>Orange</th>
+      <th>Red</th>
+      <th>Yellow</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>doc_1_word_count</th>
+      <td>0</td>
+      <td>4</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>doc_2_word_count</th>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>doc_3_word_count</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>doc_4_word_count</th>
+      <td>0</td>
+      <td>0</td>
+      <td>5</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>In this toy example, there are only five unique words (Red, Yellow, Blue, Orange, and Green), so the feature matrix contains only five features. However, imagine that each document is an entire book from a university library. In that case, the number of unique words, and therefore the number of features, could become extremely large. The resulting matrix would also be very sparse, with most entries equal to zero.</p>
+<p>To handle such a high-dimensional dataset efficiently, we can configure <code class="docutils literal notranslate"><span class="pre">DictVectorizer</span></code> to return a sparse matrix by setting <code class="docutils literal notranslate"><span class="pre">sparse=True</span></code>. This allows the vectorizer to store only the non-zero values, significantly reducing memory usage.</p>
+</section>
+<section id="imputing-missing-class-values">
+<h2>5. Imputing Missing Class Values<a class="headerlink" href="#imputing-missing-class-values" title="Link to this heading"></a></h2>
+<p>When handling a dataset with missing values in a categorical feature, one effective approach is to use a machine learning algorithm to predict the missing values. We can accomplish this by treating the categorical feature with missing values as the target vector, while using the other available features as the feature matrix.</p>
+<p>Here, we have a smaller version of the Penguins dataset. It contains 30 penguins, with two numerical features, body mass and flipper length, and one categorical feature, species.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 30 penguin samples</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"Species"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span>
+        <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Adelie"</span><span class="p">,</span>
+        <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span>
+        <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span>
+        <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">,</span> <span class="s2">"Gentoo"</span>
+    <span class="p">],</span>
+    <span class="s2">"Body_Mass (g)"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">3700</span><span class="p">,</span> <span class="mi">3700</span><span class="p">,</span> <span class="mi">3800</span><span class="p">,</span> <span class="mi">3900</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span>
+        <span class="mi">4100</span><span class="p">,</span> <span class="mi">3500</span><span class="p">,</span> <span class="mi">3750</span><span class="p">,</span> <span class="mi">3750</span><span class="p">,</span> <span class="mi">3950</span><span class="p">,</span>
+        <span class="mi">3500</span><span class="p">,</span> <span class="mi">3650</span><span class="p">,</span> <span class="mi">3800</span><span class="p">,</span> <span class="mi">3850</span><span class="p">,</span> <span class="mi">4150</span><span class="p">,</span>
+        <span class="mi">4050</span><span class="p">,</span> <span class="mi">3950</span><span class="p">,</span> <span class="mi">3700</span><span class="p">,</span> <span class="mi">3900</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span>
+        <span class="mi">5000</span><span class="p">,</span> <span class="mi">5100</span><span class="p">,</span> <span class="mi">5200</span><span class="p">,</span> <span class="mi">5300</span><span class="p">,</span> <span class="mi">4950</span><span class="p">,</span>
+        <span class="mi">5150</span><span class="p">,</span> <span class="mi">5250</span><span class="p">,</span> <span class="mi">5400</span><span class="p">,</span> <span class="mi">5050</span><span class="p">,</span> <span class="mi">5350</span>
+    <span class="p">],</span>
+    <span class="s2">"Flipper_Length (mm)"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">180</span><span class="p">,</span> <span class="mi">182</span><span class="p">,</span> <span class="mi">184</span><span class="p">,</span> <span class="mi">186</span><span class="p">,</span> <span class="mi">188</span><span class="p">,</span>
+        <span class="mi">190</span><span class="p">,</span> <span class="mi">179</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span> <span class="mi">187</span><span class="p">,</span> <span class="mi">189</span><span class="p">,</span>
+        <span class="mi">181</span><span class="p">,</span> <span class="mi">183</span><span class="p">,</span> <span class="mi">187</span><span class="p">,</span> <span class="mi">187</span><span class="p">,</span> <span class="mi">189</span><span class="p">,</span>
+        <span class="mi">191</span><span class="p">,</span> <span class="mi">184</span><span class="p">,</span> <span class="mi">186</span><span class="p">,</span> <span class="mi">188</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span>
+        <span class="mi">215</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">230</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span>
+        <span class="mi">222</span><span class="p">,</span> <span class="mi">227</span><span class="p">,</span> <span class="mi">232</span><span class="p">,</span> <span class="mi">217</span><span class="p">,</span> <span class="mi">229</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">penguins</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      Species  Body_Mass (g)  Flipper_Length (mm)
+0      Adelie           3700                  180
+1      Adelie           3700                  182
+2         NaN           3800                  184
+3      Adelie           3900                  186
+4      Adelie           4000                  188
+5      Adelie           4100                  190
+6      Adelie           3500                  179
+7      Adelie           3750                  185
+8      Adelie           3750                  187
+9      Adelie           3950                  189
+10  Chinstrap           3500                  181
+11  Chinstrap           3650                  183
+12  Chinstrap           3800                  187
+13        NaN           3850                  187
+14  Chinstrap           4150                  189
+15  Chinstrap           4050                  191
+16  Chinstrap           3950                  184
+17  Chinstrap           3700                  186
+18  Chinstrap           3900                  188
+19  Chinstrap           4000                  190
+20     Gentoo           5000                  215
+21     Gentoo           5100                  220
+22     Gentoo           5200                  225
+23     Gentoo           5300                  230
+24     Gentoo           4950                  218
+25        NaN           5150                  222
+26     Gentoo           5250                  227
+27     Gentoo           5400                  232
+28     Gentoo           5050                  217
+29     Gentoo           5350                  229
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Adelie"</span><span class="p">,</span> <span class="s2">"Chinstrap"</span><span class="p">,</span> <span class="s2">"Gentoo"</span><span class="p">]:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">"Species"</span><span class="p">]</span> <span class="o">==</span> <span class="n">species</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">"Flipper_Length (mm)"</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">"Body_Mass (g)"</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">species</span>
+    <span class="p">)</span>
+
+<span class="c1"># plot samples with missing labels</span>
+<span class="n">missing</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">"Species"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">missing</span><span class="p">[</span><span class="s2">"Flipper_Length (mm)"</span><span class="p">],</span>
+    <span class="n">missing</span><span class="p">[</span><span class="s2">"Body_Mass (g)"</span><span class="p">],</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Missing label"</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Flipper Length (mm)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Body Mass (g)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b8bbf18608fb2ce7e6edb5d03465a8306575907ac2fa1bd00c8d8562564f12a3.png" src="../../_images/b8bbf18608fb2ce7e6edb5d03465a8306575907ac2fa1bd00c8d8562564f12a3.png" />
+</div>
+</div>
+<p>In this example, we use an algorithm called <strong>k-Nearest Neighbors</strong> (<strong>kNN</strong>) to predict the missing class labels. KNN identifies the <code class="docutils literal notranslate"><span class="pre">k</span></code> observations that are closest to the observation with the missing value and <strong>assigns it the most frequent class among those nearest neighbors</strong>. In this way, the missing categorical values can be inferred from the patterns in the other features.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.neighbors</span><span class="w"> </span><span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="c1"># features used for classification</span>
+<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Body_Mass (g)"</span><span class="p">,</span> <span class="s2">"Flipper_Length (mm)"</span><span class="p">]</span>
+
+<span class="c1"># separate known and missing observations</span>
+<span class="n">known</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="s2">"Species"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span>
+<span class="n">missing</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="s2">"Species"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+
+<span class="c1"># training data</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">known</span><span class="p">,</span> <span class="n">features</span><span class="p">]</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">known</span><span class="p">,</span> <span class="s2">"Species"</span><span class="p">]</span>
+
+<span class="c1"># data with missing species labels</span>
+<span class="n">X_missing</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missing</span><span class="p">,</span> <span class="n">features</span><span class="p">]</span>
+
+<span class="c1"># standardize features</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+
+<span class="n">X_train_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">X_missing_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_missing</span><span class="p">)</span>
+
+<span class="c1"># create and train kNN model</span>
+<span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># try different odd numbers</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_scaled</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="c1"># predict missing species</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_missing_scaled</span><span class="p">)</span>
+
+<span class="c1"># display predictions</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Predicted species:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">prediction</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">penguins</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">missing</span><span class="p">],</span> <span class="n">predictions</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Row </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">prediction</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Predicted species:
+Row 2: Adelie
+Row 13: Chinstrap
+Row 25: Gentoo
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have other options for handling missing categorical values. For example, we could <strong>discard the observations with missing values</strong>, or we could <strong>use more sophisticated algorithms to predict and imputate those missing values</strong>.</p>
+<ul class="simple">
+<li><p>The first approach can be rather crude, especially when a large number of observations have missing values. There may be many reasons why values are missing, and simply discarding these observations could result in the loss of valuable information.</p></li>
+<li><p>The second approach, using machine learning or other advanced imputation techniques, can preserve more of the available data and is often more scalable to larger datasets.</p></li>
+</ul>
+</section>
+<section id="encoding-strategies">
+<h2>6. Encoding Strategies<a class="headerlink" href="#encoding-strategies" title="Link to this heading"></a></h2>
+<p>Beyond these common methods, there are several other encoding strategies that can be especially useful when working with more complex datasets:</p>
+<ul class="simple">
+<li><p><strong>Binary Encoding</strong>: Converts categories into binary representations, providing a useful compromise between OHE and label encoding, particularly for high-cardinality categorical features.</p></li>
+<li><p><strong>Target Encoding</strong> (Mean Encoding): Replaces each category with the average value of the target variable for that category. This can be powerful, but it must be carefully implemented to avoid overfitting and data leakage.</p></li>
+<li><p><strong>Frequency Encoding</strong>: Replaces each category with its frequency or proportion of occurrence in the dataset. This can be useful for reducing the dimensionality of high-cardinality features.</p></li>
+</ul>
+<p>Below, we provide a comprehensive summary of these methods, including their pros and cons and representative applications.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Method</p></th>
+<th class="head text-center"><p>Pros</p></th>
+<th class="head text-center"><p>Cons</p></th>
+<th class="head text-center"><p>Representative Applications</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p><strong>One-Hot Encoding (OHE)</strong></p></td>
+<td class="text-center"><p>Simple; no artificial order; interpretable</p></td>
+<td class="text-center"><p>Many columns; memory-intensive for high cardinality</p></td>
+<td class="text-center"><p>Country, color, product type, gender</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p><strong>Label Encoding</strong></p></td>
+<td class="text-center"><p>Simple; compact; memory-efficient</p></td>
+<td class="text-center"><p>Artificial ordering for nominal data</p></td>
+<td class="text-center"><p>Tree-based models; binary categories</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p><strong>Ordinal Encoding</strong></p></td>
+<td class="text-center"><p>Preserves natural order; easy to implement</p></td>
+<td class="text-center"><p>Assumes numeric spacing is meaningful</p></td>
+<td class="text-center"><p>Education level, satisfaction, size</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p><strong>Dictionary Mapping</strong></p></td>
+<td class="text-center"><p>Flexible; custom numeric values</p></td>
+<td class="text-center"><p>Requires domain knowledge; manual</p></td>
+<td class="text-center"><p>Custom ordinal scales, expert-defined scores</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p><strong>DictVectorizer</strong></p></td>
+<td class="text-center"><p>Converts dictionaries to matrices; supports sparse output</p></td>
+<td class="text-center"><p>High dimensionality with many features</p></td>
+<td class="text-center"><p>NLP, word counts, dictionary-based data</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p><strong>KNN / ML Imputation</strong></p></td>
+<td class="text-center"><p>Uses other features; preserves observations</p></td>
+<td class="text-center"><p>Computationally expensive; prediction errors</p></td>
+<td class="text-center"><p>Missing class/category values</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p><strong>Binary Encoding</strong></p></td>
+<td class="text-center"><p>Fewer columns; good for high cardinality</p></td>
+<td class="text-center"><p>Less interpretable; more complex</p></td>
+<td class="text-center"><p>Product IDs, ZIP codes, large categorical datasets</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p><strong>Target Encoding</strong></p></td>
+<td class="text-center"><p>Compact; effective for high cardinality</p></td>
+<td class="text-center"><p>Overfitting/data leakage risk</p></td>
+<td class="text-center"><p>Product category, merchant ID, customer segment</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p><strong>Frequency Encoding</strong></p></td>
+<td class="text-center"><p>Simple; compact; handles high cardinality</p></td>
+<td class="text-center"><p>Loses category identity; frequency may not be predictive</p></td>
+<td class="text-center"><p>Product IDs, website IDs, transaction categories</p></td>
+</tr>
+</tbody>
+</table>
+<p>Overall, <strong>there is no single best encoding method for every dataset</strong>. The choice of encoding is an important modeling decision and should be guided by several factors, including whether the categorical variable is nominal or ordinal, the number of unique categories (cardinality), the amount of available data, and the type of algorithm being used. A well-chosen encoding method represents categorical information in a way that allows the model to learn meaningful patterns while minimizing the risk of introducing artificial relationships, bias, noise, or unnecessary computational complexity.</p>
+<div class='alert alert-success'>
+<div class="admonition-exercise exercise important admonition" id="exercise-0">
+<p class="admonition-title">Exercise</p>
+<p>After completing the individual tasks for handling categorical data, it is now time to bring everything together in a hands-on exercise. We will contine to work on representative datasets as listed below.</p>
+<ul>
+<li><p><strong>Select a dataset</strong>: Choose one dataset from scikit-learn: Titanic, Adult Income, Ames Housing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_openml</span>
+
+<span class="n">titanic</span> <span class="o">=</span> <span class="n">fetch_openml</span><span class="p">(</span><span class="s2">"titanic"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">titanic_df</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">frame</span>
+<span class="n">titanic_df</span>
+
+<span class="n">adult</span> <span class="o">=</span> <span class="n">fetch_openml</span><span class="p">(</span><span class="s2">"adult"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">as_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">adult_df</span> <span class="o">=</span> <span class="n">adult</span><span class="o">.</span><span class="n">frame</span>
+<span class="n">adult_df</span>
+
+<span class="n">ames</span> <span class="o">=</span> <span class="n">fetch_openml</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"house_prices"</span><span class="p">,</span> <span class="n">as_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ames_df</span> <span class="o">=</span> <span class="n">ames</span><span class="o">.</span><span class="n">frame</span>
+<span class="n">ames_df</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Explore categorical features</strong>: Examine the unique categories and their frequencies to understand how the categorical variables are distributed.</p></li>
+<li><p><strong>Identify nominal and ordinal categorical features in dataset</strong>.</p></li>
+<li><p><strong>Encode categorical features</strong>: Convert categorical variables into numerical representations using appropriate techniques, such as ordinal encoding, one-hot encoding, or feature hashing.</p></li>
+<li><p><strong>Check for missing values</strong>: Identify missing values in categorical features and calculate their counts and percentages.</p></li>
+<li><p><strong>Decide how to handle missing categorical values</strong>: Determine whether to remove observations or impute the missing values using an appropriate method, such as the most frequent category or a machine learning approach.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-info'>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Distinguish between nominal and ordinal categorical features and understand when each type of encoding is appropriate.</p></li>
+<li><p>Encode categorical data using techniques such as one-hot, label, ordinal, and custom dictionary mapping.</p></li>
+<li><p>Transform dictionary-based features into numerical feature matrices using <code class="docutils literal notranslate"><span class="pre">DictVectorizer</span></code>.</p></li>
+<li><p>Handle missing categorical values using deletion, statistical approaches, or machine learning-based imputation.</p></li>
+<li><p>Select appropriate encoding strategies based on feature type, cardinality, dataset characteristics, and machine learning algorithm.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../2-handling-numerical-data/" class="btn btn-neutral float-left" title="Handling Numerical Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../4-exploring-dates-times-and-time-series-data/" class="btn btn-neutral float-right" title="Exploring Dates, Times, and Time-Series Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 | ENCCS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

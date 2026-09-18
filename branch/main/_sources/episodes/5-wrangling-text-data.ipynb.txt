@@ -1,0 +1,4100 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "ff665410",
+   "metadata": {},
+   "source": [
+    "# Wrangling Text Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3526c899",
+   "metadata": {},
+   "source": [
+    "Text data are one of the most common and information-rich forms of unstructured data, and Natural Language Processing (NLP) provides techniques for helping computers understand, analyze, and extract useful information from human language. Unlike structured numerical data, text can contain punctuation, different word forms, irrelevant words, entities, sentiment, and contextual meaning, which makes it necessary to transform and prepare text before it can be effectively analyzed by machine-learning algorithms."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af44dd14",
+   "metadata": {},
+   "source": [
+    "Text processing is widely used in applications such as search engines, chatbots, recommendation systems, document classification, sentiment analysis, information extraction, and customer-feedback analysis. In this episode, we take a step-by-step approach to handling text data, including cleaning and preparing text, removing punctuation and stop words, tokenizing and stemming words, tagging parts of speech, identifying named entities, converting text into numerical representations, weighting word importance, measuring text similarity for search, and finally using a sentiment-analysis classifier to extract meaning from text."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c5d1841c",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{objectives}\n",
+    "- Clean and preprocess text data using Python string operations, regular expressions, and Unicode-aware techniques.\n",
+    "- Tokenize text and apply common linguistic preprocessing techniques, including stop-word removal and stemming.\n",
+    "- Analyze text using part-of-speech tagging and named-entity recognition to extract useful linguistic and semantic information.\n",
+    "- Convert text into numerical representations using Bag-of-Words, n-grams, and TF-IDF, and use text vectors for similarity-based search.\n",
+    "- Apply pretrained NLP models to perform tasks such as sentiment analysis and incorporate text-derived information into machine-learning workflows.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7b41305b",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-success'>\n",
+    "\n",
+    ":::{instructor-note}\n",
+    "- 40 minutes teaching\n",
+    "- 30 minutes exercising/discussion\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f68bdb64",
+   "metadata": {},
+   "source": [
+    "## 1. Cleaning Text with Python String Operations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "24082ec6",
+   "metadata": {},
+   "source": [
+    "Text data often needs to be cleaned before we can use it to create features or feed it into a machine-learning algorithm. This preprocessing step can involve removing unwanted characters, correcting formatting, standardizing text, or transforming strings into a more consistent form. For many basic cleaning tasks, Python’s built-in string methods are sufficient.\n",
+    "\n",
+    "In the following example, we work with the titles and authors of three books. The text contains leading and trailing whitespace, punctuation, and inconsistent capitalization. We will progressively use three of Python’s core string operations `strip()`, `replace()`, and `split()`, to manipulate text without requiring additional libraries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "722ed130",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# create text data\n",
+    "text_data = [\n",
+    "    \"    Absolutely small. By Mike Fayer.  \",\n",
+    "    \" Today Is The night. By Jarek Prakash \",\n",
+    "    \"  Three body. By Cixin Liu   \",\n",
+    "    \"  Build a large language model. By Sebastian Raschka\"\n",
+    "]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "898f0033",
+   "metadata": {},
+   "source": [
+    "The first step is to remove unnecessary whitespace from the beginning and end of each string. We can do this with the `strip()` method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "fd90209d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Absolutely small. By Mike Fayer.',\n",
+       " 'Today Is The night. By Jarek Prakash',\n",
+       " 'Three body. By Cixin Liu',\n",
+       " 'Build a large language model. By Sebastian Raschka']"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# remove leading and trailing whitespace\n",
+    "strip_whitespace = [string.strip() for string in text_data]\n",
+    "\n",
+    "# display cleaned text\n",
+    "strip_whitespace"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "90d1cadd",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "Notice that `strip()` removes whitespace from the beginning and end of each string, but does not change the whitespace between words.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "089c8e0a",
+   "metadata": {},
+   "source": [
+    "Then we remove the periods from each string using `replace()` method."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "2f556a39",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Absolutely small By Mike Fayer',\n",
+       " 'Today Is The night By Jarek Prakash',\n",
+       " 'Three body By Cixin Liu',\n",
+       " 'Build a large language model By Sebastian Raschka']"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# remove periods\n",
+    "remove_periods = [string.replace(\".\", \"\") for string in strip_whitespace]\n",
+    "\n",
+    "# display cleaned text\n",
+    "remove_periods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "654fa8ba",
+   "metadata": {},
+   "source": [
+    "### 1.1 Creating a custom text-cleaning function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5892779",
+   "metadata": {},
+   "source": [
+    "As text-cleaning requirements become more complex, repeatedly applying individual string operations can become difficult to manage. A better approach is to place our cleaning logic inside a custom function. We can then apply that function to every item in our dataset.\n",
+    "\n",
+    "For example, suppose we want to standardize the capitalization of our text. We can create a function called `capitalizer()` that converts a string to uppercase."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "c4772c74",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['ABSOLUTELY SMALL BY MIKE FAYER',\n",
+       " 'TODAY IS THE NIGHT BY JAREK PRAKASH',\n",
+       " 'THREE BODY BY CIXIN LIU',\n",
+       " 'BUILD A LARGE LANGUAGE MODEL BY SEBASTIAN RASCHKA']"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create a custom transformation function\n",
+    "def capitalizer(string: str) -> str:\n",
+    "    return string.upper()\n",
+    "\n",
+    "# apply function to each string\n",
+    "capitalized_text = [\n",
+    "    capitalizer(string)\n",
+    "    for string in remove_periods\n",
+    "]\n",
+    "\n",
+    "capitalized_text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4ac9ccf7",
+   "metadata": {},
+   "source": [
+    "This example illustrates an important principle in text preprocessing: rather than manually cleaning individual records, we can define a transformation once and apply it consistently to an entire collection of text."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2318b364",
+   "metadata": {},
+   "source": [
+    "### 1.2 Using regular expressions for complex cleaning"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "90c5a971",
+   "metadata": {},
+   "source": [
+    "Python’s standard string methods are useful for straightforward transformations, but some cleaning tasks require us to identify patterns rather than specific characters or words. For these situations, we can use **regular expressions**.\n",
+    "Regular expressions allow us to search for and manipulate text based on patterns, such as finding email addresses, URLs, numbers, repeated whitespace, or groups of characters.\n",
+    "\n",
+    "Python provides regular-expression functionality through the built-in `re` module. Here as a simple example, we can create a function that replaces every letter with the character `X`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "7bd63e1e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# import regular expression library\n",
+    "import re\n",
+    "\n",
+    "# create a function that replaces letters with X\n",
+    "def replace_letters_with_X(string: str) -> str:\n",
+    "    return re.sub(r\"[a-zA-Z]\", \"X\", string)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "29e22e20",
+   "metadata": {},
+   "source": [
+    "Here the regular expression `[a-zA-Z]` matches any uppercase or lowercase letter. The `re.sub()` function then replaces each matching character with X."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "718a2ffa",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['XXXXXXXXXX XXXXX XX XXXX XXXXX',\n",
+       " 'XXXXX XX XXX XXXXX XX XXXXX XXXXXXX',\n",
+       " 'XXXXX XXXX XX XXXXX XXX',\n",
+       " 'XXXXX X XXXXX XXXXXXXX XXXXX XX XXXXXXXXX XXXXXXX']"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# apply function\n",
+    "masked_text = [\n",
+    "    replace_letters_with_X(string)\n",
+    "    for string in remove_periods\n",
+    "]\n",
+    "\n",
+    "masked_text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "10c27c19",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "The appropriate cleaning steps depend on what we intend to do with the text. For example, a search system may benefit from lowercasing and removing certain punctuation, while a sentiment-analysis system may need to preserve punctuation, emojis, or words such as \"not\" because they can carry important information.\n",
+    "\n",
+    "The goal is therefore not to remove as much text as possible, but to **remove unnecessary noise while preserving information that is useful for tasks at hand**.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0fcaef6",
+   "metadata": {},
+   "source": [
+    "## 2. Removing Punctuation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8e8ff5f",
+   "metadata": {},
+   "source": [
+    "After cleaning the basic formatting of text, the next step we may want to consider is removing punctuation. **Punctuation marks** such as periods, commas, exclamation marks, question marks, quotation marks, and parentheses can introduce additional variations in our text. For example, a model might otherwise treat `hello`, `hello!`, and `hello?` as different tokens, even though they contain the same underlying word.\n",
+    "\n",
+    "Removing punctuation can simplify the text and reduce the number of unique features we need to work with. However, punctuation is not always noise, and it can carry important information about meaning, tone, or type of text we are analyzing. For example, `Right?` is different from `Right!`, and a question mark can be a useful feature when identifying questions. Therefore, punctuation should only be removed when it makes sense for the downstream task.\n",
+    "\n",
+    "In the following examples, we will use Python to identify punctuation characters and remove them from our text. We will begin with a unicode-aware approach that can handle a much broader range of punctuation than simply specifying a few characters such as `.`, `,`, and `!`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6770d390",
+   "metadata": {},
+   "source": [
+    "First, we create a small collection of text strings containing different types of punctuation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "eace6334",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Hi!!!! I. Love. This. Song....!!',\n",
+       " '10000%%% Agree!!!! ... !!! Love??IT??!!',\n",
+       " 'Right?!?!%%%']"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create text data\n",
+    "text_data = [\n",
+    "    \"Hi!!!! I. Love. This. Song....!!\",\n",
+    "    \"10000%%% Agree!!!! ... !!! Love??IT??!!\",\n",
+    "    \"Right?!?!%%%\"\n",
+    "]\n",
+    "text_data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ecb0db51",
+   "metadata": {},
+   "source": [
+    "Notice that our text contains several different punctuation characters, including exclamation marks `!`, periods `.`, percent signs `%`, and question marks `?`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "da0134ed",
+   "metadata": {},
+   "source": [
+    "### 2.1 Using unicode to identify punctuation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "41b4803e",
+   "metadata": {},
+   "source": [
+    "Python's `unicodedata` module provides information about individual Unicode characters, including their character categories. This allows us to identify punctuation more systematically."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "80580e6b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      ". Po\n",
+      "! Po\n",
+      "? Po\n",
+      "A Lu\n",
+      "1 Nd\n"
+     ]
+    }
+   ],
+   "source": [
+    "# load libraries\n",
+    "import sys\n",
+    "import unicodedata\n",
+    "\n",
+    "# check unicode category of several characters\n",
+    "characters = [\".\", \"!\", \"?\", \"A\", \"1\"]\n",
+    "\n",
+    "for character in characters:\n",
+    "    print(\n",
+    "        character,\n",
+    "        unicodedata.category(character)\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b79a514f",
+   "metadata": {},
+   "source": [
+    "The exact category codes are useful because Unicode classifies characters into groups. In particular, categories beginning with `Po` represent punctuation, `Lu` represents letter, and `Nd` represents number and decimal digit."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d24fcfd2",
+   "metadata": {},
+   "source": [
+    "### 2.2 Removing punctuation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b0dde3f9",
+   "metadata": {},
+   "source": [
+    "To remove punctuation, we can search through the Unicode character set and identify characters whose category starts with \"P\"."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "bb2f9c45",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[33, 34, 35, 37, 38, 39, 40, 41, 42, 44]"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create a dictionary of punctuation characters\n",
+    "punctuation = dict.fromkeys(\n",
+    "    i\n",
+    "    for i in range(sys.maxunicode)\n",
+    "    if unicodedata.category(chr(i)).startswith(\"P\")\n",
+    ")\n",
+    "\n",
+    "# display a few punctuation characters\n",
+    "list(punctuation.keys())[:10]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d181a29c",
+   "metadata": {},
+   "source": [
+    "The resulting dictionary contains Unicode punctuation characters as keys and `None` as their values.\n",
+    "- Why use `None`?\n",
+    "- Python's `str.translate()` method interprets a mapping to `None` as an instruction to remove that character."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "f55b1131",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Hi I Love This Song', '10000 Agree   LoveIT', 'Right']"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# remove punctuation from each string\n",
+    "cleaned_text = [\n",
+    "    string.translate(punctuation)\n",
+    "    for string in text_data\n",
+    "]\n",
+    "\n",
+    "# display result\n",
+    "cleaned_text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "53084801",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "There are other, sometimes more readable, ways to remove punctuation. For example, we could use a regular expression:\n",
+    "```python\n",
+    "    import re\n",
+    "    cleaned_text = [re.sub(r\"[^\\w\\s]\", \"\", string) for string in text_data]\n",
+    "    cleaned_text\n",
+    "```\n",
+    "Or we could process individual characters:\n",
+    "```python\n",
+    "    cleaned_text = [\n",
+    "        \"\".join(character for character in string if character not in string.punctuation)\n",
+    "        for string in text_data\n",
+    "    ]\n",
+    "```\n",
+    "\n",
+    "These approaches may be easier to understand when first learning text processing, while `translate()` is often a good choice when we need to process a large amount of text efficiently.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9b05db69",
+   "metadata": {},
+   "source": [
+    "### 2.3 Preserving selected punctuation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ab8349c9",
+   "metadata": {},
+   "source": [
+    "It should be noted that punctuation may contains information. For example, \"Right!\" and \"Right?\" have the same word, but the ppunctuation changes the meaning, tone, or purpose of the sentence.\n",
+    "Therefore before automatically removing punctuation, we should consider whether it contains information that our model needs."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d726777f",
+   "metadata": {},
+   "source": [
+    "Depending on the specific task, rather than removing all punctuation marks, we can choose to remove only the characters that are not needed. For example, suppose we want to remove periods and commas while keeping question marks and exclamation marks."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "6434bc1e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['I love this!', 'Is this working?', 'This is great really great']"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "text_data = [\"I love this!\", \"Is this working?\", \"This is great, really great.\"]\n",
+    "translation_table = str.maketrans(\"\", \"\", \".,\")\n",
+    "\n",
+    "cleaned_text = [\n",
+    "    text.translate(translation_table)\n",
+    "    for text in text_data\n",
+    "]\n",
+    "cleaned_text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "333e450f",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout} Removing punctuation can make text easier to process and can reduce unnecessary variation in the features we create.\n",
+    "- Python's `translate()` method provides an efficient way to perform this operation, while `re` and character-level processing provide alternative approaches.\n",
+    "- However, punctuation is not automatically noise.\n",
+    "\t- Before removing it, we should consider downstream task.\n",
+    "\t- If punctuation contains information that can help the model, such as distinguishing questions, expressing emotion, or identifying document structure, we should preserve it or selectively remove only punctuation that is not useful.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4f4804c2",
+   "metadata": {},
+   "source": [
+    "## 3. Tokenizing Text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d9f4ef98",
+   "metadata": {},
+   "source": [
+    "After cleaning our text, we often want to break it into smaller pieces that a computer can work with. Such a process is called **tokenization**, which splits text into smaller units called **tokens**. Depending on the task, tokens can be individual words, sentences, characters, or even smaller pieces of words.\n",
+    "\n",
+    "Python provides several libraries for tokenizing text. One of the most widely used is the **Natural Language Toolkit** (NLTK), which provides a broad collection of tools for text processing and natural language analysis, including **word tokenization** and **sentence tokenization**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "id": "590d2df7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "[nltk_data] Downloading package punkt to /Users/yonglei/nltk_data...\n",
+      "[nltk_data]   Package punkt is already up-to-date!\n",
+      "[nltk_data] Downloading package punkt_tab to\n",
+      "[nltk_data]     /Users/yonglei/nltk_data...\n",
+      "[nltk_data]   Package punkt_tab is already up-to-date!\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 75,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# download punkt_tab resource if needed\n",
+    "import nltk\n",
+    "nltk.download(\"punkt\")\n",
+    "nltk.download(\"punkt_tab\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75a556a0",
+   "metadata": {},
+   "source": [
+    "### 3.1 Word tokenization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2d705356",
+   "metadata": {},
+   "source": [
+    "**Word tokenization** is a common step after cleaning text data, and it transforms a continuous string of text into a sequence of individual words. Once text has been tokenized, we can perform additional operations such as counting word frequencies, removing stop words, stemming or lemmatizing words, tagging parts of speech, or converting tokens into numerical features.\n",
+    "\n",
+    "We begin with a simple text example and tokenize it into several words."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "37e6b41e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "['Talk',\n",
+       " 'is',\n",
+       " 'cheap',\n",
+       " ',',\n",
+       " 'show',\n",
+       " 'me',\n",
+       " 'the',\n",
+       " 'code',\n",
+       " ';',\n",
+       " '💻',\n",
+       " 'Code',\n",
+       " 'is',\n",
+       " 'cheap',\n",
+       " ',',\n",
+       " 'show',\n",
+       " 'me',\n",
+       " 'the',\n",
+       " 'prompt',\n",
+       " '!',\n",
+       " '🤖']"
+      ]
+     },
+     "execution_count": 101,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nltk.tokenize import word_tokenize\n",
+    "\n",
+    "# create text\n",
+    "text = \"\"\"\n",
+    "Talk is cheap, show me the code; 💻\n",
+    "Code is cheap, show me the prompt! 🤖\n",
+    "\"\"\"\n",
+    "\n",
+    "# tokenize text into words\n",
+    "tokens = word_tokenize(text)\n",
+    "print(len(tokens))\n",
+    "tokens"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8e12ef26",
+   "metadata": {},
+   "source": [
+    "Our original sentence was a single string. After tokenization, it becomes a list of individual tokens. We can work with each token separately, or we can work with multiple tokens together."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 100,
+   "id": "02bb90bb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Talk is 🤖\n",
+      "Talk is cheap , show me the code 🤖\n",
+      "Code is cheap , show me the prompt ! 💻\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(tokens[0], tokens[1], tokens[-1])\n",
+    "\n",
+    "sentence_1 = \" \".join(tokens[:8] + tokens[-1:])\n",
+    "sentence_2 = \" \".join(tokens[10:-1] + tokens[9:10])\n",
+    "print(sentence_1)\n",
+    "print(sentence_2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "749597a9",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "**Tokenization** and **punctuation removal** are separate preprocessing steps.\n",
+    "- If we removed punctuation before tokenization, `!`, `;` and `,` would no longer appear.\n",
+    "- If we tokenize first, punctuation can be preserved as its own token and handled later.\n",
+    "\n",
+    "Which approach is preferable depends on our downstream task.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a9e764f",
+   "metadata": {},
+   "source": [
+    "Acutally tokenization is more than simply splitting a string on spaces. From code snippet below, we can identify that **`split()` method separates text at whitespace**, whereas **an NLP tokenizer applies rules designed to identify meaningful units of language, and can recognize punctuation and language-specific patterns**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 104,
+   "id": "f1a81642",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['I', 'do', \"n't\", 'think', 'this', 'is', 'working', '.']\n",
+      "['I', \"don't\", 'think', 'this', 'is', 'working.']\n"
+     ]
+    }
+   ],
+   "source": [
+    "text = \"I don't think this is working.\"\n",
+    "tokens = word_tokenize(text)\n",
+    "print(tokens)\n",
+    "print(text.split())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "56a4bfdf",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{warning}\n",
+    "It is important to recognize that there is no single \"correct\" way to tokenize text. Traditional NLP workflows often use **word-level tokenization**, while modern pretrained language models may use more sophisticated **subword tokenization** techniques. For example, models such as Google's BERT use model-specific tokenization to break text into tokens that may represent complete words or parts of words. Subword tokenization helps modern language models handle unfamiliar words, different word forms, and large vocabularies. Nevertheless, word-level tokenization remains a useful and common technique when we want to work directly with individual words and construct traditional text features.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa2c660e",
+   "metadata": {},
+   "source": [
+    "### 3.2 Sentence tokenization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8974f54",
+   "metadata": {},
+   "source": [
+    "We can also tokenize text into sentences rather than individual words. This is known as **sentence tokenization** or **sentence segmentation**. For example, we split the original text into two sentences as shown below."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 129,
+   "id": "adcdd505",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['Talk is cheap, show me the code 💻.', 'Code is cheap, show me the prompt 🤖!']\n",
+      "2\n"
+     ]
+    }
+   ],
+   "source": [
+    "# import sentence tokenizer\n",
+    "from nltk.tokenize import sent_tokenize\n",
+    "\n",
+    "# create text containing two sentences\n",
+    "text = (\n",
+    "    \"Talk is cheap, show me the code 💻. \"\n",
+    "    \"Code is cheap, show me the prompt 🤖!\"\n",
+    ")\n",
+    "\n",
+    "# tokenize text into sentences\n",
+    "sentences = sent_tokenize(text)\n",
+    "print(sentences)\n",
+    "print(len(sentences))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a2b8abc",
+   "metadata": {},
+   "source": [
+    "So, instead of producing individual words, `sent_tokenize()` identifies the boundaries between sentences and returns a list containing two sentence, which can be verified via `len(sentences)`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b87320dd",
+   "metadata": {},
+   "source": [
+    "### 3.3 Combining sentence and word tokenizations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e171bc2",
+   "metadata": {},
+   "source": [
+    "In some applications, we may want to first identify individual sentences and then tokenize each sentence into words. This structure can be useful when we need to preserve the relationship between words and the sentences in which they occur."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 130,
+   "id": "2d9c790c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[['Talk', 'is', 'cheap', ',', 'show', 'me', 'the', 'code', '💻', '.'],\n",
+       " ['Code', 'is', 'cheap', ',', 'show', 'me', 'the', 'prompt', '🤖', '!']]"
+      ]
+     },
+     "execution_count": 130,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "text = (\n",
+    "    \"Talk is cheap, show me the code 💻. \"\n",
+    "    \"Code is cheap, show me the prompt 🤖!\"\n",
+    ")\n",
+    "\n",
+    "# split text into sentences\n",
+    "sentences = sent_tokenize(text)\n",
+    "\n",
+    "# tokenize each sentence into words\n",
+    "tokenized_sentences = [\n",
+    "    word_tokenize(sentence)\n",
+    "    for sentence in sentences\n",
+    "]\n",
+    "tokenized_sentences"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75da9fe9",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-success'>\n",
+    "\n",
+    ":::{exercise} A small tokenization exercise\n",
+    "\n",
+    "Let's try tokenizing a slightly more realistic piece of text:\n",
+    "```python\n",
+    "    text = \"\"\"\n",
+    "    Natural language processing is fascinating!\n",
+    "    It allows computers to work with human language.\n",
+    "    But text data can be messy.\n",
+    "    \"\"\"\n",
+    "\n",
+    "    sentences = sent_tokenize(text)\n",
+    "\n",
+    "    for sentence in sentences:\n",
+    "        print(word_tokenize(sentence))\n",
+    "```\n",
+    "\n",
+    "Run the code and try to explore:\n",
+    "- How many sentences were identified?\n",
+    "- How many words are in each sentence?\n",
+    "- Which punctuation marks became tokens?\n",
+    "- What would happen if we removed punctuation before tokenizing?\n",
+    "- How might contractions such as \"don't\" be represented?\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "102fc948",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-danger'>\n",
+    "\n",
+    ":::{questions} Why tokenization matters?\n",
+    ":class: dropdown\n",
+    "\n",
+    "Tokenization is often the bridge between raw text and subsequent NLP processing. \n",
+    "Tokenization converts text into manageable units that can be analyzed by an NLP system. Word tokenization is particularly useful when our features are based on individual words, while sentence tokenization allows us to analyze text one sentence at a time.\n",
+    "\n",
+    "Although modern language models often use subword tokenization rather than traditional word-level tokenization, understanding word and sentence tokenization remains fundamental. It provides an intuitive introduction to how unstructured language can be transformed into structured data and prepares us for the next stages of our NLP workflow, including removing stop words, stemming words, tagging parts of speech, and creating numerical text features.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "10454817",
+   "metadata": {},
+   "source": [
+    "## 4. Handling Stop Words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c0a84d64",
+   "metadata": {},
+   "source": [
+    "After tokenizing our text, we may want to consider is removing stop words. **Stop words** are common words but provide little useful information for a particular task. This term mostly refers to very frequent words in natural language, such as “a,” “an,” “the,” “is,” “of,” “to,” “on,” and “and”. Removing them can reduce the number of tokens we need to process and allow a model to focus on words that are more useful for distinguishing documents or identifying topics. For example, in sentence \"I am going to the store and the park.\", words such as \"I\", \"am\", \"to\", \"the\", and \"and\" may contain less information for some applications than words such as \"store\" and \"park\".\n",
+    "\n",
+    "However, stop-word removal is not always appropriate. Whether we should remove stop words depends on specific downstream task. For example, in sentiment analysis, words such as “not” can be extremely important. Consider these two sentences: “I like this product” and “I do not like this product.” If “not” is removed as a stop word, the two sentences could become much more similar, even though their meanings are completely opposite.\n",
+    "\n",
+    "Therefore, stop-word removal should be treated as a preprocessing decision rather than a mandatory step in every NLP pipeline."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "34320f95",
+   "metadata": {},
+   "source": [
+    "### 4.1 Using NLTK's stop-word list"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4496f485",
+   "metadata": {},
+   "source": [
+    "NLTK's stopwords corpus contains lists of commonly used stop words for several languages. We can load the English stop-word list as follows. This gives us a predefined collection of common English words that we can use when filtering tokenized text."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 132,
+   "id": "fc90a301",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "[nltk_data] Downloading package stopwords to\n",
+      "[nltk_data]     /Users/yonglei/nltk_data...\n",
+      "[nltk_data]   Package stopwords is already up-to-date!\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "['a', 'about', 'above', 'after', 'again', 'against', 'ain', 'all', 'am', 'an']"
+      ]
+     },
+     "execution_count": 132,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# download stop-word corpus if needed\n",
+    "import nltk\n",
+    "nltk.download(\"stopwords\")\n",
+    "\n",
+    "from nltk.corpus import stopwords\n",
+    "\n",
+    "# load English stop-word list\n",
+    "stop_words = stopwords.words(\"english\")\n",
+    "stop_words[:10]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1458453a",
+   "metadata": {},
+   "source": [
+    "### 4.2 Removing stop words from tokenized text"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6f9e23e6",
+   "metadata": {},
+   "source": [
+    "We start with a list of already tokenized words `tokenized_words` and remove any token that appears in NLTK's English stop-word list."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 133,
+   "id": "682aa05d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['going', 'go', 'store', 'park']"
+      ]
+     },
+     "execution_count": 133,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tokenized_words = [\n",
+    "    \"i\", \"am\", \"going\", \"to\", \"go\",\n",
+    "    \"to\", \"the\", \"store\", \"and\", \"park\"\n",
+    "]\n",
+    "\n",
+    "# remove stop words\n",
+    "filtered_words = [\n",
+    "    word\n",
+    "    for word in tokenized_words\n",
+    "    if word not in stop_words\n",
+    "]\n",
+    "filtered_words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c619d67d",
+   "metadata": {},
+   "source": [
+    "It turns out that common words such as \"i\", \"am\", \"to\", \"the\", and \"and\" have been removed, while the more content-rich words \"going\", \"go\", \"store\", and \"park\" remain."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ac854a80",
+   "metadata": {},
+   "source": [
+    "Our stop-word list contains lowercase words. If our tokens contain uppercase letters, we may need to normalize them before checking for stop words. For example we have `tokenized_words`, using `str.lower()` ensures that \"The\" and \"the\" are treated as the same word. This is one reason that lowercasing is often performed during text preprocessing."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "88260af0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['cat', 'mat']"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tokenized_words = [\"The\", \"cat\", \"is\", \"on\", \"the\", \"mat\"]\n",
+    "filtered_words = [\n",
+    "    word\n",
+    "    for word in tokenized_words\n",
+    "    if word.lower() not in stop_words\n",
+    "]\n",
+    "filtered_words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0fc7dc08",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout}\n",
+    "Stop-word removal is a common preprocessing technique used to reduce number of tokens and focus our analysis on words that provide more information.\n",
+    "- NLTK provides a convenient starting point with its predefined English stop-word list, but that list should not automatically be treated as the correct list for every problem.\n",
+    "- Noted that stop-word removal is task-dependent, and we should understand what information we are removing before applying transformation.\n",
+    "    - In particular, words that appear unimportant in isolation can sometimes be essential when combined with other words or when interpreting meaning of an entire sentence.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "78de80e5",
+   "metadata": {},
+   "source": [
+    "## 5. Stemming and Lemmatization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32eb33b1",
+   "metadata": {},
+   "source": [
+    "After tokenizing text, and optionally removing stop words, we can normalize words using either **stemming** or **lemmatization**. These are alternative approaches: **stemming reduces words to a common stem**, while **lemmatization aims to find their proper dictionary form**.\n",
+    "\n",
+    "NLTK provides several algorithms for both stemming and lemmatization. One of the most widely used stemming algorithms is the Porter stemming algorithm, implemented by NLTK’s `PorterStemmer`. It is a relatively simple and widely used approach that applies a series of rules to remove or replace common suffixes and produce a stem.\n",
+    "\n",
+    "For lemmatization, NLTK provides the `WordNetLemmatizer`, which uses the `WordNet` lexical database to reduce words to their base or dictionary forms. Unlike stemming, lemmatization aims to produce a valid word and can take the word’s part of speech into account."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1efec7a1",
+   "metadata": {},
+   "source": [
+    "### 5.1 Stemming with Porter Stemmer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8b94c0b",
+   "metadata": {},
+   "source": [
+    "**Stemming** is such a process reduces a word to a shorter form, called its **stem**, by removing or modifying common prefixes and suffixes. For example, the words “tradition” and “traditional” are different words, but they share the same general concept. A stemming algorithm may reduce both to the stem “tradit”. Similarly, words such as \"connect\", \"connected\", \"connecting\", and \"connection\" may be reduced to forms that are much closer to one another. This can be useful when we want to compare documents, count related words, or reduce the size of our vocabulary.\n",
+    "\n",
+    "Let's use NLTK's `PorterStemmer` to stem a list of tokenized words."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 134,
+   "id": "e6251a3e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['i', 'am', 'humbl', 'by', 'thi', 'tradit', 'meet']"
+      ]
+     },
+     "execution_count": 134,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nltk.stem.porter import PorterStemmer\n",
+    "\n",
+    "# create word tokens\n",
+    "tokenized_words = [\n",
+    "    \"i\", \"am\", \"humbled\", \"by\",\n",
+    "    \"this\", \"traditional\", \"meeting\"\n",
+    "]\n",
+    "\n",
+    "# create stemmer\n",
+    "porter = PorterStemmer()\n",
+    "\n",
+    "# apply stemmer to each word\n",
+    "stemmed_words = [\n",
+    "    porter.stem(word)\n",
+    "    for word in tokenized_words\n",
+    "]\n",
+    "stemmed_words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2ec2e1c7",
+   "metadata": {},
+   "source": [
+    "Notice that several words have been shortened: \"humbled → humbl\", \"this → thi\", \"traditional → tradit\", and \"meeting → meet\". The results may initially look strange because \"humbl\" and \"tradit\" are not standard English words. This is expected as the **purpose of stemming is not to produce grammatically correct words, but to reduce related word forms to a common representation**."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8cf1885",
+   "metadata": {},
+   "source": [
+    "### 5.2 Stemming a complete sentence"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d6f77dbe",
+   "metadata": {},
+   "source": [
+    "In practice, we usually do not stem just one word. We apply the stemmer to all tokens from a piece of text."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 137,
+   "id": "05a58304",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['natur',\n",
+       " 'languag',\n",
+       " 'process',\n",
+       " 'is',\n",
+       " 'fascin',\n",
+       " 'and',\n",
+       " 'it',\n",
+       " 'allow',\n",
+       " 'comput',\n",
+       " 'to',\n",
+       " 'work',\n",
+       " 'with',\n",
+       " 'human',\n",
+       " 'languag',\n",
+       " '.']"
+      ]
+     },
+     "execution_count": 137,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "text = \"\"\"\n",
+    "Natural language processing is fascinating\n",
+    "and it allows computers to work with human language.\n",
+    "\"\"\"\n",
+    "\n",
+    "# tokenize text\n",
+    "tokens = word_tokenize(text.lower())\n",
+    "\n",
+    "# stem each token\n",
+    "stemmed_tokens = [\n",
+    "    porter.stem(word)\n",
+    "    for word in tokens\n",
+    "]\n",
+    "stemmed_tokens"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fe35f069",
+   "metadata": {},
+   "source": [
+    "The result contains the stemmed representation of each token, along with punctuation tokens unless punctuation has already been removed."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0b28492c",
+   "metadata": {},
+   "source": [
+    "After stemming a complete sentence, we compare the original tokens with their stems."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 138,
+   "id": "88d0e520",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "natural     → natur\n",
+      "language    → languag\n",
+      "processing  → process\n",
+      "is          → is\n",
+      "fascinating → fascin\n",
+      "and         → and\n",
+      "it          → it\n",
+      "allows      → allow\n",
+      "computers   → comput\n",
+      "to          → to\n",
+      "work        → work\n",
+      "with        → with\n",
+      "human       → human\n",
+      "language    → languag\n",
+      ".           → .\n"
+     ]
+    }
+   ],
+   "source": [
+    "for original, stemmed in zip(tokens, stemmed_tokens):\n",
+    "    print(f\"{original:11} → {stemmed}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8bef2ec",
+   "metadata": {},
+   "source": [
+    "This gives us a direct view of what the stemming algorithm is doing. We see transformations such as \"natural → natur\", \"language → languag\", \"processing → process\", \"fascinating → fascin\", and \"computers → comput\"."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4d4339ac",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-danger'>\n",
+    "\n",
+    ":::{questions} Why is stemming useful?\n",
+    ":class: dropdown\n",
+    "\n",
+    "- Suppose we have two documents: \"We are studying machine learning.\", and \"The researchers studied machine learning.\".\n",
+    "    - Without normalization, \"studying\" and \"studied\" are different tokens.\n",
+    "    - After stemming, they may be reduced to a common or similar stem: \"studying → studi\" and \"studied → studi\".\n",
+    "    - This makes it easier for traditional text-processing techniques to recognize that the two documents contain related terms.\n",
+    "- Stemming can therefore be useful when:\n",
+    "    - Reducing vocabulary size\n",
+    "    - Comparing documents\n",
+    "    - Counting related word forms\n",
+    "    - Building traditional information-retrieval systems\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "09861907",
+   "metadata": {},
+   "source": [
+    "### 5.3 Stemming vs. lemmatization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "42039c0f",
+   "metadata": {},
+   "source": [
+    "Stemming is not perfect. As **stemming relies on rules rather than a complete understanding of language**, it can sometimes produce undesirable results. For example, the resulting stems from the following code snippet may not be complete or meaningful English words.\n",
+    "\n",
+    "Another important point is that **stemming focuses on reducing related words to a common form**, such as \"university → univers\" and \"universe → univers\", rather than producing a grammatically correct word. As a result, the output can sometimes look incomplete or even unnatural, such as \"univers\", \"studi\", or \"organ\"."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 151,
+   "id": "e141aade",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "universities → univers\n",
+      "universe     → univers\n",
+      "studies      → studi\n",
+      "study        → studi\n",
+      "organization → organ\n",
+      "organize     → organ\n"
+     ]
+    }
+   ],
+   "source": [
+    "# stemming\n",
+    "words = [\n",
+    "    \"universities\",\n",
+    "    \"universe\",\n",
+    "    \"studies\",\n",
+    "    \"study\",\n",
+    "    \"organization\",\n",
+    "    \"organize\"\n",
+    "]\n",
+    "\n",
+    "for word in words:\n",
+    "    print(f\"{word:12} → {porter.stem(word)}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cfab6361",
+   "metadata": {},
+   "source": [
+    "**Lemmatization**, on the other hand, **aims to reduce words to their proper dictionary or base forms**. For example, “studies → study” and “universities → university.” So, while stemming mainly cuts words down based on predefined rules, lemmatization uses linguistic information to identify the correct base form."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f6b3423b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# download wordnet resource if needed\n",
+    "import nltk\n",
+    "nltk.download('wordnet')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 150,
+   "id": "446b64b2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "universities → university\n",
+      "universe     → universe\n",
+      "studies      → study\n",
+      "study        → study\n",
+      "organization → organization\n",
+      "organize     → organize\n"
+     ]
+    }
+   ],
+   "source": [
+    "# lemmatization\n",
+    "from nltk.stem import WordNetLemmatizer\n",
+    "lemmatizer = WordNetLemmatizer()\n",
+    "\n",
+    "words = [\n",
+    "    \"universities\",\n",
+    "    \"universe\",\n",
+    "    \"studies\",\n",
+    "    \"study\",\n",
+    "    \"organization\",\n",
+    "    \"organize\"\n",
+    "]\n",
+    "\n",
+    "for word in words:\n",
+    "    print(f\"{word:12} → {lemmatizer.lemmatize(word)}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b644f7fe",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout} Stemming vs. lemmatization\n",
+    "\n",
+    "**Stemming and lemmatization are generally alternative approaches**.\n",
+    "- Stemming uses a set of predefined rules to shorten words.\n",
+    "    - traditional → tradit, studies → studi\n",
+    "    - It is faster and simpler, but may produce unnatural forms.\n",
+    "- Lemmatization attempts to determine appropriate dictionary or base form.\n",
+    "    - studies → study, better → good (depending on context and lemmatizer)\n",
+    "    - Lemmatization is more linguistically meaningful, and produces dictionary/base forms, but usually requires more computational resources and linguistic information.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e7ae14aa",
+   "metadata": {},
+   "source": [
+    "## 6. Tagging Parts of Speech (PoS)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dd78321b",
+   "metadata": {},
+   "source": [
+    "After cleaning, tokenizing, and normalizing our text, we can take the next step and identify the grammatical role of each word. This process is called **part-of-speech (PoS) tagging**. A **PoS tagger** assigns a grammatical category to each token based on how the word is used in its surrounding context. Common categories include *nouns*, *verbs*, *adjectives*, *adverbs*, *pronouns*, and *prepositions*.\n",
+    "\n",
+    "For example, in the sentence \"Chris loved outdoor running.\", we might identify \"Chris\" as a proper noun, \"loved\" as a verb, \"outdoor\" as an adjective, and \"running\" as a verb or gerund. POS information can be useful when we want to understand grammatical structure of text or create features based on particular types of words."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc9232d6",
+   "metadata": {},
+   "source": [
+    "### 6.1 Using NLTK's pretrained PoS tagger"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65633506",
+   "metadata": {},
+   "source": [
+    "If our text is English and comes from a general domain, the simplest approach is often to use NLTK's pretrained POS tagger. The pretrained model has already learned patterns from a large collection of tagged text, so we do not need to create and label our own training data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32bce91c",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{warning}\n",
+    "A general-purpose tagger may not perform as well on specialized domains such as medicine, law, finance, or highly technical text.\n",
+    "- NLTK allows us to train our own tagger, but doing so requires a sufficiently large tagged corpus.\n",
+    "- Creating such a corpus is time-consuming and expensive, so training a custom tagger is generally considered only when a pretrained model is not accurate enough for the application.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4df5de44",
+   "metadata": {},
+   "source": [
+    "We begin with a simple example. We first tokenize our text and then pass tokens to NLTK's pretrained POS tagger."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 154,
+   "id": "887299df",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "[nltk_data] Downloading package averaged_perceptron_tagger to\n",
+      "[nltk_data]     /Users/yonglei/nltk_data...\n",
+      "[nltk_data]   Package averaged_perceptron_tagger is already up-to-\n",
+      "[nltk_data]       date!\n",
+      "[nltk_data] Downloading package averaged_perceptron_tagger_eng to\n",
+      "[nltk_data]     /Users/yonglei/nltk_data...\n",
+      "[nltk_data]   Package averaged_perceptron_tagger_eng is already up-to-\n",
+      "[nltk_data]       date!\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 154,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# download averaged_perceptron_tagger resource if needed\n",
+    "nltk.download(\"averaged_perceptron_tagger\")\n",
+    "nltk.download(\"averaged_perceptron_tagger_eng\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 155,
+   "id": "45f824ba",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('Chris', 'NNP'), ('loved', 'VBD'), ('outdoor', 'RP'), ('running', 'VBG')]"
+      ]
+     },
+     "execution_count": 155,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from nltk import pos_tag, word_tokenize\n",
+    "\n",
+    "# create text\n",
+    "text_data = \"Chris loved outdoor running\"\n",
+    "\n",
+    "# tokenize and tag text\n",
+    "text_tagged = pos_tag(word_tokenize(text_data))\n",
+    "text_tagged"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d4701ffc",
+   "metadata": {},
+   "source": [
+    "We get a list of tuples, \"Chris → NNP\", \"loved → VBD\", \"outdoor → RP\", and \"running → VBG\". Each tuple contains `(word, PoS tag)`. The PoS tagger is making a prediction about the grammatical role of each word based on the word itself and its context.\n",
+    "\n",
+    "NLTK's PoS tagger uses the **Penn Treebank tag set**, a widely used collection of PoS labels for English. Here are some commonly encountered tags.\n",
+    "\n",
+    "| Tag | Meaning | Example |\n",
+    "| :-: | :-----: | :-----: |\n",
+    "| NN  | Noun, singular | book  |\n",
+    "| NNS | Noun, plural   | books |\n",
+    "| NNP | Proper noun, singular | Chris |\n",
+    "| VB | Verb, base form | run |\n",
+    "| VBD | Verb, past tense | loved |\n",
+    "| VBG | Verb, gerund/present participle | running |\n",
+    "| JJ  | Adjective | amazing |\n",
+    "| RB  | Adverb | quickly |\n",
+    "| PRP | Personal pronoun | I |\n",
+    "| DT  | Determiner | the |\n",
+    "| IN  | Preposition/subordinating conjunction | in |\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a10a0734",
+   "metadata": {},
+   "source": [
+    "Once our text has been tagged, we can use the tags to extract particular types of words. For example, suppose we want to find all nouns. We can filter the tagged tokens using the noun tags."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "3592f7f5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Chris']"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# define noun tags\n",
+    "noun_tags = {\"NN\", \"NNS\", \"NNP\", \"NNPS\"}\n",
+    "\n",
+    "# extract nouns\n",
+    "nouns = [\n",
+    "    word\n",
+    "    for word, tag in text_tagged\n",
+    "    if tag in noun_tags\n",
+    "]\n",
+    "nouns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "692eb7b6",
+   "metadata": {},
+   "source": [
+    "We can use the same approach to extract adjectives with `adjective_tags = {\"JJ\", \"JJR\", \"JJS\"}` or verbs with `verb_tags = {\"VB\", \"VBD\", \"VBG\", \"VBN\", \"VBP\", \"VBZ\"}`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 156,
+   "id": "a96e4e06",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[]"
+      ]
+     },
+     "execution_count": 156,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# define adjective tags\n",
+    "adjective_tags = {\"JJ\", \"JJR\", \"JJS\"}\n",
+    "\n",
+    "# extract adjectives\n",
+    "adjectives = [\n",
+    "    word\n",
+    "    for word, tag in text_tagged\n",
+    "    if tag in adjective_tags\n",
+    "]\n",
+    "adjectives"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "23bec899",
+   "metadata": {},
+   "source": [
+    "### 6.2 PoS tags as features"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f5285dcf",
+   "metadata": {},
+   "source": [
+    "PoS tags become even more useful when we move from simply analyzing text to building features for a machine learning or deep learning model. Imagine that we have a collection of tweets and want to describe each tweet using the PoS it contains. Instead of representing a tweet only by its words, we could create features indicating whether particular PoS categories are present.\n",
+    "\n",
+    "For example we have a tweet message \"Political science is an amazing field\", we can first tokenize and PoS-tag the tweet message and then use one-hot encoding (OHE) to convert these categorical PoS tags into numerical features."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 157,
+   "id": "56ae42b7",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[['PRP', 'VBP', 'VBG', 'DT', 'NN', 'IN', 'NN'],\n",
+       " ['JJ', 'NN', 'VBZ', 'DT', 'JJ', 'NN'],\n",
+       " ['NNP', 'NNP', 'VBZ', 'DT', 'JJ', 'NN']]"
+      ]
+     },
+     "execution_count": 157,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create text data\n",
+    "tweets = [\n",
+    "    \"I am eating a burrito for breakfast\",\n",
+    "    \"Political science is an amazing field\",\n",
+    "    \"San Francisco is an awesome city\"\n",
+    "]\n",
+    "\n",
+    "# create a list to store PoS tags\n",
+    "tagged_tweets = []\n",
+    "\n",
+    "# tag each tweet\n",
+    "for tweet in tweets:\n",
+    "    tweet_tagged = pos_tag(word_tokenize(tweet))\n",
+    "\n",
+    "    # keep only the POS tags\n",
+    "    tags = [\n",
+    "        tag\n",
+    "        for word, tag in tweet_tagged\n",
+    "    ]\n",
+    "\n",
+    "    tagged_tweets.append(tags)\n",
+    "\n",
+    "tagged_tweets"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d6ac4f99",
+   "metadata": {},
+   "source": [
+    "The resulting structure contains one list of PoS tags for each tweet.\n",
+    "Then we can use use scikit-learn's `MultiLabelBinarizer` to convert these PoS tags into a numerical representation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 158,
+   "id": "1b4b145e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1, 1, 0, 1, 0, 1, 1, 1, 0],\n",
+       "       [1, 0, 1, 1, 0, 0, 0, 0, 1],\n",
+       "       [1, 0, 1, 1, 1, 0, 0, 0, 1]])"
+      ]
+     },
+     "execution_count": 158,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.preprocessing import MultiLabelBinarizer\n",
+    "\n",
+    "# create encoder\n",
+    "one_hot_multi = MultiLabelBinarizer()\n",
+    "\n",
+    "# transform PoS tags into binary features\n",
+    "pos_features = one_hot_multi.fit_transform(tagged_tweets)\n",
+    "pos_features"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3a07fdca",
+   "metadata": {},
+   "source": [
+    "The resulting matrix contains one row per tweet and one column per PoS tag. A value of 1 indicates that the PoS tag occurs in the text, and 0 indicates that the PoS tag does not occur in the text.\n",
+    "\n",
+    "However, the numerical columns do not mean much unless we know which PoS tag each column represents. We can retrieve the feature names using encoder's `classes_` attribute."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "0ef3ecfb",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['DT', 'IN', 'JJ', 'NN', 'NNP', 'PRP', 'VBG', 'VBP', 'VBZ'],\n",
+       "      dtype=object)"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# display PoS feature names\n",
+    "one_hot_multi.classes_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0ebe28f6",
+   "metadata": {},
+   "source": [
+    "This tells us how to interpret each column in our feature matrix. If `one_hot_multi.classes_[2] == 'JJ'`, then the third column represents whether an adjective (JJ) occurs in each tweet."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3935e131",
+   "metadata": {},
+   "source": [
+    "Besides identifying the feature names, sometimes we want to know how many times it occurs. Therefore we should count PoS tags instead of just detecting them in the list. For example, a sentence \"I really really like this amazing product\" contains multiple adverbs and other PoS categories. We can count the tags using Python's `Counter`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 159,
+   "id": "ee6c7971",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Counter({'RB': 2, 'PRP': 1, 'IN': 1, 'DT': 1, 'JJ': 1, 'NN': 1})"
+      ]
+     },
+     "execution_count": 159,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from collections import Counter\n",
+    "\n",
+    "tweet = \"I really really like this amazing product\"\n",
+    "\n",
+    "tags = [tag for word, tag in pos_tag(word_tokenize(tweet))]\n",
+    "tag_counts = Counter(tags)\n",
+    "tag_counts"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6a41b293",
+   "metadata": {},
+   "source": [
+    "This produces a frequency distribution of PoS tags, which can provide a richer feature representation than a simple 0/1 indicator."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "663c552a",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout}\n",
+    "POS tagging assigns grammatical categories to individual tokens based on their context.\n",
+    "- NLTK's pretrained tagger provides a convenient starting point for general English text, while custom taggers may be necessary for specialized domains where a general-purpose model does not perform well.\n",
+    "- PoS features complement word-based features, and provide useful signals for certain tasks.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1c75369f",
+   "metadata": {},
+   "source": [
+    "## 7. Performing Named-Entity Recognition (NER)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d42be2bd",
+   "metadata": {},
+   "source": [
+    "After PoS tagging in text, we can take another step toward understanding the information contained in text by identifying specific entities. This process is called **Named-Entity Recognition** (NER). NER is the process of **identifying and classifying real-world entities mentioned in freeform text**, such as people, organizations, locations, dates, products, and monetary values. For example, consider the sentence \"Elon Musk offered to buy Meta using $21B of his own money\". A human reader can quickly recognize that \"Elon Musk\" is a person, \"Meta\" is an organization, and \"$21B\" represents a monetary value.\n",
+    "\n",
+    "NER allows a computer to make these same distinctions automatically. Tools such as **spaCy** provide pretrained NLP pipelines and machine learning models that can identify many common types of entities without requiring us to build a model from scratch.\n",
+    "\n",
+    "In real-world applications, however, organizations may train or fine-tune NER models when the pretrained model does not recognize the specialized entities required by their application. This can be particularly important for domains such as medicine, law, finance, or scientific research, where domain-specific terminology may not be adequately represented by a general-purpose model. Training a custom NER model is outside the scope of this example.  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21d9c862",
+   "metadata": {},
+   "source": [
+    "### 7.1 Using spaCy for NER"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3aca446b",
+   "metadata": {},
+   "source": [
+    "We can use spaCy's pretrained English pipeline to identify entities in our text. We first import spaCy, loading the pretrained English language model, and then pass our text to spaCy pipeline."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "536cb3c7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import spacy\n",
+    "\n",
+    "# load pretrained English NLP pipeline\n",
+    "nlp = spacy.load(\"en_core_web_sm\")\n",
+    "\n",
+    "# create and parse text\n",
+    "text = (\n",
+    "    \"Elon Musk offered to buy Meta \"\n",
+    "    \"using $21B of his own money.\"\n",
+    ")\n",
+    "\n",
+    "doc = nlp(text)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "05654fbe",
+   "metadata": {},
+   "source": [
+    "The `nlp()` call processes the text and creates a spaCy `Doc` object, which contains information about individual tokens as well as any entities that the model identifies. We can access all recognized entities through the `doc.ents` attribute:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "05f31a93",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(Elon Musk, Meta, 21B)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# display recognized entities\n",
+    "print(doc.ents)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c15f4173",
+   "metadata": {},
+   "source": [
+    "We can then loop through the entities and display both the entity text and its predicted label."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "d025d8fb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Elon Musk, PERSON\n",
+      "Meta, ORG\n",
+      "21B, MONEY\n"
+     ]
+    }
+   ],
+   "source": [
+    "# display each entity and its label\n",
+    "for entity in doc.ents:\n",
+    "    print(entity.text, entity.label_, sep=\", \")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1c9ffd49",
+   "metadata": {},
+   "source": [
+    "Here, spaCy has identified three entities:\n",
+    "| Entity | Label | Meaning |\n",
+    "| :----: | :---: | :------:|\n",
+    "| Elon Musk | PERSON | Person |\n",
+    "| Meta | ORG | Organization |\n",
+    "| 21B | MONEY | Monetary value |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "74dde67d",
+   "metadata": {},
+   "source": [
+    "The label tells us what type of entity spaCy believes it has found. Some commonly used spaCy entity labels include:\n",
+    "| Label | Description | Example |\n",
+    "| :---: | :---------: | :------:|\n",
+    "| GPE | Geopolitical entity | France |\n",
+    "| LOC | Location | Pacific Ocean |\n",
+    "| DATE | Date | August 2026 |\n",
+    "| TIME | Time | 5 PM |\n",
+    "| PRODUCT | Product | iPhone |\n",
+    "| EVENT | Event | Olympics |\n",
+    "| CARDINAL | Number | 21 |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "81533415",
+   "metadata": {},
+   "source": [
+    "### 7.2 Extracting entities into a structured format"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e30ed90c",
+   "metadata": {},
+   "source": [
+    "Instead of simply printing these entities, we can store them in a Python data structure. This gives us structured records as shown below."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "7f9d79f3",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[{'text': 'Elon Musk', 'label': 'PERSON'},\n",
+       " {'text': 'Meta', 'label': 'ORG'},\n",
+       " {'text': '21B', 'label': 'MONEY'}]"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "entities = [\n",
+    "    {\n",
+    "        \"text\": entity.text,\n",
+    "        \"label\": entity.label_\n",
+    "    }\n",
+    "    for entity in doc.ents\n",
+    "]\n",
+    "entities"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c4f1709b",
+   "metadata": {},
+   "source": [
+    "Once entities have been identified, we can filter them by their labels, for example to extract people, organizations, and monetary values.\n",
+    "This allows us to turn a general NER process into a targeted information-extraction task."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "01a13402",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Elon Musk']"
+      ]
+     },
+     "execution_count": 39,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "people = [\n",
+    "    entity.text\n",
+    "    for entity in doc.ents\n",
+    "    if entity.label_ == \"PERSON\"\n",
+    "]\n",
+    "people"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "4b37f6a2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Meta']"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "organizations = [\n",
+    "    entity.text\n",
+    "    for entity in doc.ents\n",
+    "    if entity.label_ == \"ORG\"\n",
+    "]\n",
+    "organizations"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca71178a",
+   "metadata": {},
+   "source": [
+    "### 7.3 Applying NER to multiple documents"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e01d03d0",
+   "metadata": {},
+   "source": [
+    "In a realistic NLP application, we will usually have many documents rather than a single sentence. The code snippet below  demonstrates how the same pretrained model can be applied repeatedly to a collection of documents."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "id": "6a41cb53",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Text: Elon Musk founded SpaceX.\n",
+      "  Elon Musk → PERSON\n",
+      "\n",
+      "Text: Microsoft is headquartered in Redmond.\n",
+      "  Microsoft → ORG\n",
+      "  Redmond → GPE\n",
+      "\n",
+      "Text: Apple reported strong sales in 2025.\n",
+      "  Apple → ORG\n",
+      "  2025 → DATE\n"
+     ]
+    }
+   ],
+   "source": [
+    "texts = [\n",
+    "    \"Elon Musk founded SpaceX.\",\n",
+    "    \"Microsoft is headquartered in Redmond.\",\n",
+    "    \"Apple reported strong sales in 2025.\"\n",
+    "]\n",
+    "\n",
+    "for text in texts:\n",
+    "    doc = nlp(text)\n",
+    "\n",
+    "    print(f\"\\nText: {text}\")\n",
+    "\n",
+    "    for entity in doc.ents:\n",
+    "        print(\n",
+    "            f\"  {entity.text} → {entity.label_}\"\n",
+    "        )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8a1e5a2c",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{warning}\n",
+    "**Important limitation: NER is a prediction**\n",
+    "- Although pretrained NER models are convenient, they are not perfect. A model may fail to recognize an entity, assign the wrong label, or behave differently when it encounters unfamiliar terminology.\n",
+    "- For example, a general-purpose model trained primarily on news and general English may struggle with highly specialized medical or scientific entities.\n",
+    "- We can inspect the model's predictions, but we should not automatically assume that every prediction is correct.\n",
+    "- This is especially important when NER is being used to create data for a high-stakes application.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "518a1ec2",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout} **NER as a data-extraction pipeline**\n",
+    "\n",
+    "- POS tagging tells us what grammatical role a word plays, while NER tells us whether a sequence of words refers to a particular type of real-world entity. \n",
+    "- NER transforms important pieces of unstructured text into structured information.\n",
+    "    - With a pretrained spaCy model, we can identify entities such as people, organizations, locations, dates, and monetary values with relatively little code.\n",
+    "- Next stage will move from linguistic information to numerical representations of text, allowing machine-learning algorithms to work directly with the information contained in documents.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c93b625d",
+   "metadata": {},
+   "source": [
+    "## 8. Encoding Text as a Bag of Words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "eaee8ae7",
+   "metadata": {},
+   "source": [
+    "After cleaning, tokenizing, and extracting linguistic information from text, we need to take another important step: **turning text into numerical features that an algorithm can use**. One of the simplest and most widely used approaches is the **Bag-of-Words** (**BoW**) model. A BoW model creates a feature for every unique word in the text collection. Each feature records how many times that word occurs in a particular observation. The approach is called a \"bag\" of words because it focuses on which words occur and how frequently they occur, while generally ignoring their order.\n",
+    "\n",
+    "For example in the sentence \"I love France. France!\", the word \"France\" appears twice, so the \"france\" feature has a value of 2. The word \"love\" appears once, so the \"love\" feature has a value of 1."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5c20014e",
+   "metadata": {},
+   "source": [
+    "### 8.1 Creating and viewing a BoW feature matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "52e5981d",
+   "metadata": {},
+   "source": [
+    "Scikit-learn provides `CountVectorizer`, a convenient tool for converting a collection of text documents into a BoW feature matrix. We begin with a small dataset `text_data`, creating a `CountVectorizer` object and then use it to transform the text."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 164,
+   "id": "1fcf4120",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Compressed Sparse Row sparse matrix of dtype 'int64'\n",
+       "\twith 8 stored elements and shape (3, 8)>"
+      ]
+     },
+     "execution_count": 164,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "\n",
+    "# create text data\n",
+    "text_data = np.array([\n",
+    "    \"I love France. France!\",\n",
+    "    \"Argentina is best\",\n",
+    "    \"Spain beats both\"\n",
+    "])\n",
+    "\n",
+    "# create a BoW vectorizer\n",
+    "count = CountVectorizer()\n",
+    "\n",
+    "# create BoW feature matrix\n",
+    "bag_of_words = count.fit_transform(text_data)\n",
+    "bag_of_words"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "82311547",
+   "metadata": {},
+   "source": [
+    "The output tells us that this dataset contains:\n",
+    "- 3 observations — the three sentences\n",
+    "- 8 features — the eight unique words identified by `CountVectorizer`\n",
+    "- 8 nonzero values — only eight word occurrences need to be stored"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4f9db725",
+   "metadata": {},
+   "source": [
+    "`CountVectorizer` returns a sparse matrix by default. As our dataset is very small, we can convert the matrix into a regular NumPy array so that we can see the values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 165,
+   "id": "0a49c92a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[0, 0, 0, 0, 2, 0, 1, 0],\n",
+       "       [1, 0, 1, 0, 0, 1, 0, 0],\n",
+       "       [0, 1, 0, 1, 0, 0, 0, 1]])"
+      ]
+     },
+     "execution_count": 165,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# convert sparse matrix to a regular array\n",
+    "bag_of_words.toarray()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c4dffa98",
+   "metadata": {},
+   "source": [
+    "Each row represents one observation, while each column represents one word feature.\n",
+    "However, the numerical matrix is difficult to interpret without knowing which word corresponds to each column.\n",
+    "We can retrieve the feature names using `get_feature_names_out()`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 166,
+   "id": "ddf27ef4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina', 'beats', 'best', 'both', 'france', 'is', 'love',\n",
+       "       'spain'], dtype=object)"
+      ]
+     },
+     "execution_count": 166,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# show feature names\n",
+    "feature_names = count.get_feature_names_out()\n",
+    "feature_names"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "597812ae",
+   "metadata": {},
+   "source": [
+    "With the list of feature names, we can therefore map the columns of our matrix to the corresponding words.\n",
+    "\n",
+    "| Text | argentina | beats | best | both | france | is | love | spain |\n",
+    "| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |\n",
+    "| I love France. France! | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 |\n",
+    "| Argentina is best      | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 |\n",
+    "| Spain beats both       | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8c305eb",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "\n",
+    "A note about single-character words\n",
+    "- You may have noticed that \"I\" does not appear in the vocabulary.\n",
+    "- By default, `CountVectorizer` uses a token pattern that requires a token to contain at least two alphanumeric characters. As a result, the single-character word \"I\" is ignored.\n",
+    "- We can inspect the default token pattern:\n",
+    "    ```python\n",
+    "        # display CountVectorizer's default token pattern\n",
+    "        count.token_pattern\n",
+    "    ```\n",
+    "- If we want single-character words to be included, we can change token pattern. Check a complete version of [code example](../code/5-8.1-bow-single-character.py).\n",
+    "    ```python\n",
+    "        # include single-character words\n",
+    "        count_single = CountVectorizer(\n",
+    "            token_pattern=r\"(?u)\\b\\w+\\b\"\n",
+    "        )\n",
+    "        bag_of_words_single = count_single.fit_transform(text_data)\n",
+    "        # show feature names\n",
+    "        count_single.get_feature_names_out()\n",
+    "    ```\n",
+    "- This indicates that the preprocessing rules used by a vectorizer affect the features that are ultimately created.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2c7b7d88",
+   "metadata": {},
+   "source": [
+    "### 8.2 Creating n-gram features"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9e450199",
+   "metadata": {},
+   "source": [
+    "By default, `CountVectorizer` creates one feature for each individual word. These are called **unigrams**. However, sometimes the combination of words is more informative than individual words. For example, the phrase \"machine learning\" consists of two words, but together they represent a specific concept. If we treat them as separate features, \"machine\" and \"learning\", we may lose the meaning conveyed by the phrase as a whole.\n",
+    "\n",
+    "As such, we can use **n-grams** to create features representing combinations of words.\n",
+    "- A 1-gram (unigram) contains one word: \"machine\" and \"learning\".\n",
+    "- A 2-gram (bigram) contains two consecutive words: \"machine learning\".\n",
+    "- A 3-gram (trigram) contains three consecutive words: \"natural language processing\".\n",
+    "\n",
+    "We can control the size of the n-grams using the `ngram_range` parameter."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "64d68144",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina', 'argentina is', 'beats', 'beats both', 'best', 'both',\n",
+       "       'france', 'france france', 'is', 'is best', 'love', 'love france',\n",
+       "       'spain', 'spain beats'], dtype=object)"
+      ]
+     },
+     "execution_count": 169,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create a vectorizer using unigrams and bigrams\n",
+    "count_ngrams = CountVectorizer(\n",
+    "    ngram_range=(1, 2)\n",
+    ")\n",
+    "bag_of_words_ngrams = count_ngrams.fit_transform(text_data)\n",
+    "count_ngrams.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d96729c9",
+   "metadata": {},
+   "source": [
+    "With `ngram_range=(1, 2)`, we obtain both \"1-word features\" and \"2-word features\". For example \"Spain beats both\" can generate features such as \"spain\", \"beats\", \"both\", \"spain beats\", \"beats both\". If we just want to get bigrams, we can set `ngram_range=(2, 2)`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a5fdd32a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina is', 'beats both', 'france france', 'is best',\n",
+       "       'love france', 'spain beats'], dtype=object)"
+      ]
+     },
+     "execution_count": 170,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "count_bigrams = CountVectorizer(\n",
+    "    ngram_range=(2, 2)\n",
+    ")\n",
+    "count_bigrams.fit_transform(text_data)\n",
+    "count_bigrams.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "15111146",
+   "metadata": {},
+   "source": [
+    "For our collection of documents, we can include up to trigrams. However, the trade-off is that **increasing the n-gram range can dramatically increase number of features**."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "90ab935d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina', 'argentina is', 'argentina is best', 'beats',\n",
+       "       'beats both', 'best', 'both', 'france', 'france france', 'is',\n",
+       "       'is best', 'love', 'love france', 'love france france', 'spain',\n",
+       "       'spain beats', 'spain beats both'], dtype=object)"
+      ]
+     },
+     "execution_count": 47,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "count_ngrams = CountVectorizer(\n",
+    "    ngram_range=(1, 3)\n",
+    ")\n",
+    "count_ngrams.fit_transform(text_data)\n",
+    "count_ngrams.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "65cc1b74",
+   "metadata": {},
+   "source": [
+    "### 8.3 Restricting vocabulary"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7dae71f4",
+   "metadata": {},
+   "source": [
+    "Sometimes we do not want to create features for every word in the dataset. Instead, we may have a specific vocabulary of terms that we care about. Suppose we are interested only in country names `countries = [\"france\", \"argentina\", \"spain\"]`. We can provide this vocabulary directly to `CountVectorizer`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 171,
+   "id": "1324af1b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[2, 0, 0],\n",
+       "       [0, 1, 0],\n",
+       "       [0, 0, 1]])"
+      ]
+     },
+     "execution_count": 171,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "countries = [\"france\", \"argentina\", \"spain\"]\n",
+    "country_vectorizer = CountVectorizer(\n",
+    "    vocabulary=countries\n",
+    ")\n",
+    "\n",
+    "country_features = country_vectorizer.fit_transform(\n",
+    "    text_data\n",
+    ")\n",
+    "country_features.toarray()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e9d00d57",
+   "metadata": {},
+   "source": [
+    "The resulting features represent only the country names we specified. We can inspect their names via code snippet below. This can be useful when we have prior knowledge about which terms are relevant to our problem."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "id": "56a9e915",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['france', 'argentina', 'spain'], dtype=object)"
+      ]
+     },
+     "execution_count": 49,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "country_vectorizer.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "131b0797",
+   "metadata": {},
+   "source": [
+    "In general, `CountVectorizer` provides several parameters that allow us to control how text is converted into features. For code snippet shown below\n",
+    "- `lowercase=True` converts text to lowercase,\n",
+    "- `stop_words=\"english\"` removes common English stop words,\n",
+    "- `ngram_range=(1, 2)` creates unigrams and bigrams,\n",
+    "- `min_df=1` keeps terms appearing in at least one document.\n",
+    "\n",
+    "These parameters allow us to customize the feature-generation process rather than relying entirely on default settings."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 172,
+   "id": "6867a682",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "vectorizer = CountVectorizer(\n",
+    "    lowercase=True,\n",
+    "    stop_words=\"english\",\n",
+    "    ngram_range=(1, 2),\n",
+    "    min_df=1\n",
+    ")\n",
+    "X = vectorizer.fit_transform(text_data)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7c608f50",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fdef48fd",
+   "metadata": {},
+   "source": [
+    "## 9. Weighting Word Importance with TF-IDF"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "289bd3db",
+   "metadata": {},
+   "source": [
+    "The BoW is powerful because it gives us a simple numerical representation of text, but it has an important limitation: **it treats words primarily as independent features and does not capture how important a word is across entire collection of documents**. However, not every word is equally useful. A word that appears many times in one document may be particularly relevant to that document, while a word that appears in almost every document may provide very little information for distinguishing one document from another.\n",
+    "\n",
+    "To address this, we can assign a weight to each word based on its importance within a document and its rarity across the entire collection of documents. A common approach is called **term frequency–inverse document frequency (TF-IDF)**. TF-IDF combines two ideas.\n",
+    "- First, **term frequency** (TF) measures how often a word occurs in a particular document. The more frequently a word appears in a document, the more likely it is to be relevant to that document.\n",
+    "    - For example, if the word \"economy\" appears many times in a document, that provides some evidence that the document may be related to economics.\n",
+    "- Second, **document frequency** (DF) measures how many documents contain a particular word.\n",
+    "    - If a word appears in almost every document, it is less useful for distinguishing one document from another.\n",
+    "\n",
+    "By combining these two ideas, TF-IDF gives us a score that reflects how important a word is to a particular document $\\text{tf-idf}(t,d) = \\text{tf}(t,d) \\times \\text{idf}(t)$, where ($t$) represents a term (word) and ($d$) represents a document. The intuition is straightforward:\n",
+    "- High TF + Low DF  → High importance\n",
+    "- High TF + High DF → Lower importance\n",
+    "- Low TF  + Low DF  → Usually lower importance\n",
+    "\n",
+    "In scikit-learn, TF is based on the number of times a term appears in a document, while the default inverse document frequency is calculated as $\\text{idf}(t) = \\log\\left(\\frac{1+n_d}{1+\\text{df}(t)}\\right)+1$, where ($n_d$) is the total number of documents and ($\\text{df}(t)$) is the number of documents containing term ($t$). The addition of 1 prevents division by zero and provides a form of smoothing. The final values therefore reflect the relative importance of words within each document rather than simply their raw counts.\n",
+    "\n",
+    "In practice, we can use scikit-learn's `TfidfVectorizer` to transform a collection of documents into a TF-IDF feature matrix. This gives us a representation similar to BoW, but instead of simply counting words, we weight each word according to how informative it is."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9b483035",
+   "metadata": {},
+   "source": [
+    "### 9.1 Creating and viewing a TF-IDF feature matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "57e146ad",
+   "metadata": {},
+   "source": [
+    "We adopt the same small collection of documents from our BoW example, and then create a `TfidfVectorizer` to transform the documents."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "id": "14cf817d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Compressed Sparse Row sparse matrix of dtype 'float64'\n",
+       "\twith 8 stored elements and shape (3, 8)>"
+      ]
+     },
+     "execution_count": 51,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "\n",
+    "# text data\n",
+    "text_data = np.array([\n",
+    "    \"I love France. France!\",\n",
+    "    \"Argentina is best\",\n",
+    "    \"Spain beats both\"\n",
+    "])\n",
+    "\n",
+    "# create TF-IDF vectorizer\n",
+    "tfidf = TfidfVectorizer()\n",
+    "\n",
+    "# create TF-IDF feature matrix\n",
+    "feature_matrix = tfidf.fit_transform(text_data)\n",
+    "feature_matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "172382ae",
+   "metadata": {},
+   "source": [
+    "The output indicates that there are three rows for three documents, and eight columns for eight unique terms in text data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1da0e5a8",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "Noted that the values are now floating-point numbers rather than integer word counts. This is because **TF-IDF assigns a weight to each term rather than simply recording its frequency**.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "df421dce",
+   "metadata": {},
+   "source": [
+    "As with BoW, the matrix is sparse. For this small example, we can convert it to a dense NumPy array, which combines with feature names to form a pandas DataFrame, which is similar in structure to the BoW feature matrix."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 176,
+   "id": "2eb9298d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>argentina</th>\n",
+       "      <th>beats</th>\n",
+       "      <th>best</th>\n",
+       "      <th>both</th>\n",
+       "      <th>france</th>\n",
+       "      <th>is</th>\n",
+       "      <th>love</th>\n",
+       "      <th>spain</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.894427</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.447214</td>\n",
+       "      <td>0.00000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0.57735</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.57735</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.57735</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.57735</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.57735</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.57735</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   argentina    beats     best     both    france       is      love    spain\n",
+       "0    0.00000  0.00000  0.00000  0.00000  0.894427  0.00000  0.447214  0.00000\n",
+       "1    0.57735  0.00000  0.57735  0.00000  0.000000  0.57735  0.000000  0.00000\n",
+       "2    0.00000  0.57735  0.00000  0.57735  0.000000  0.00000  0.000000  0.57735"
+      ]
+     },
+     "execution_count": 176,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# convert sparse matrix to a dense array\n",
+    "dense_matrix = feature_matrix.toarray()\n",
+    "\n",
+    "# get feature names\n",
+    "feature_names = tfidf.get_feature_names_out()\n",
+    "\n",
+    "# combine them into a DataFrame\n",
+    "df_tfidf = pd.DataFrame(\n",
+    "    dense_matrix,\n",
+    "    columns=feature_names\n",
+    ")\n",
+    "df_tfidf"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0ee02caa",
+   "metadata": {},
+   "source": [
+    "The values in preceeding DataFrame should not be interpreted as simple word counts anymore. Instead, they represent the relative TF-IDF importance of each term within each document. For example, in the first document \"I love France. France!\", \"france\" occurs twice, while \"love\" occurs once. \"France\" therefore receives a larger TF-IDF value than \"love\" in this small example: \"france → 0.8944\", \"love → 0.4472\". In addition, these values have been normalized, which is why they do not simply correspond to the raw counts 2 and 1."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cbb7ef56",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-danger'>\n",
+    "\n",
+    ":::{questions} Why TF-IDF can be better than raw counts?\n",
+    ":class: dropdown\n",
+    "\n",
+    "Here we consider two words \"the\" and \"quantum\". Suppose \"the\" occurs 500 times across a collection of documents, while \"quantum\" occurs only 20 times.\n",
+    "- **Raw word** counts might suggest that \"the\" is more important simply because it appears more often.\n",
+    "    - But if \"the\" occurs in almost every document, it can't tell us what any particular document is about.\n",
+    "    - If \"quantum\" appears frequently in only a small number of documents, it can be much more useful for distinguishing those documents.\n",
+    "- **TF-IDF** captures this distinction via rules.\n",
+    "    - \"Frequent in one document + Rare across documents → High TF-IDF\".\n",
+    "    - \"Frequent across many documents → Lower IDF → Lower TF-IDF\".\n",
+    "- This makes TF-IDF particularly useful for applications such as document search, information retrieval, document classification, and text similarity.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bb624d6d",
+   "metadata": {},
+   "source": [
+    "### 9.2 Looking at TF and IDF separately"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0cd4f8bd",
+   "metadata": {},
+   "source": [
+    "To understand TF-IDF more clearly, it is useful to separate two components conceptually.\n",
+    "- Term frequency (TF) asks \"How often does this word occur in this document?\"\n",
+    "    - For example \"I love France. France!\" has: \"france → 2\", and \"love → 1\".\n",
+    "- Document frequency (DF) asks \"In how many documents does this word occur?\"\n",
+    "    - In our example, \"france → 1 document\", \"love → 1 document\", \"spain → 1 document\", and \"is → 1 document\".\n",
+    "    - A word appearing in only one document is more useful for distinguishing that document than a word appearing in every document."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a2e30f40",
+   "metadata": {},
+   "source": [
+    "We can inspect the IDF values learned by `vectorizer`. The code example below returns a mapping from each word to its column index."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 54,
+   "id": "d692653b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'love': 6,\n",
+       " 'france': 4,\n",
+       " 'argentina': 0,\n",
+       " 'is': 5,\n",
+       " 'best': 2,\n",
+       " 'spain': 7,\n",
+       " 'beats': 1,\n",
+       " 'both': 3}"
+      ]
+     },
+     "execution_count": 54,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# display vocabulary\n",
+    "tfidf.vocabulary_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "784626fa",
+   "metadata": {},
+   "source": [
+    "We can also inspect actual IDF weights via code snippet below."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "id": "07f5c1db",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'argentina': np.float64(1.6931471805599454),\n",
+       " 'beats': np.float64(1.6931471805599454),\n",
+       " 'best': np.float64(1.6931471805599454),\n",
+       " 'both': np.float64(1.6931471805599454),\n",
+       " 'france': np.float64(1.6931471805599454),\n",
+       " 'is': np.float64(1.6931471805599454),\n",
+       " 'love': np.float64(1.6931471805599454),\n",
+       " 'spain': np.float64(1.6931471805599454)}"
+      ]
+     },
+     "execution_count": 55,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# display IDF value for each feature\n",
+    "dict(zip(\n",
+    "    tfidf.get_feature_names_out(),\n",
+    "    tfidf.idf_\n",
+    "))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "13c492f6",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-danger'>\n",
+    "\n",
+    ":::{questions} Why are all IDF values the same?\n",
+    ":class: dropdown\n",
+    "\n",
+    "TfidfVectorizer uses smoothed IDF: $IDF(t) = \\log(\\frac{1+n_d}{1+df(t)}) + 1$. In this example, we have 3 documents ($n_d = 3$), and after tokenization each word appears in exactly one document ($df(t) = 1$).\n",
+    "\n",
+    "Our toy dataset is very small and most words occur only in one document, many of the IDF values will be the same. In a realistic dataset containing hundreds or thousands of documents, the differences become much more meaningful.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "86a2e799",
+   "metadata": {},
+   "source": [
+    "Once we have a TF-IDF matrix, we can identify which words have the highest weights for a particular document."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 183,
+   "id": "d3620dbe",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('france', np.float64(0.8944271909999159)),\n",
+       " ('love', np.float64(0.4472135954999579)),\n",
+       " ('argentina', np.float64(0.0)),\n",
+       " ('beats', np.float64(0.0)),\n",
+       " ('best', np.float64(0.0)),\n",
+       " ('both', np.float64(0.0)),\n",
+       " ('is', np.float64(0.0)),\n",
+       " ('spain', np.float64(0.0))]"
+      ]
+     },
+     "execution_count": 183,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# select first document\n",
+    "document_index = 0 # pick other documents\n",
+    "\n",
+    "# get TF-IDF scores\n",
+    "scores = feature_matrix[document_index].toarray().flatten()\n",
+    "\n",
+    "# pair words with their scores\n",
+    "word_scores = list(zip(feature_names, scores))\n",
+    "\n",
+    "# sort from highest to lowest score\n",
+    "word_scores = sorted(\n",
+    "    word_scores,\n",
+    "    key=lambda x: x[1],\n",
+    "    reverse=True\n",
+    ")\n",
+    "word_scores"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5d71f75a",
+   "metadata": {},
+   "source": [
+    "We can then display the most important terms. In this example, \"france\" will receive a higher weight than \"love\" because it occurs twice in the document."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 184,
+   "id": "6840b6b5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('france', np.float64(0.8944271909999159)),\n",
+       " ('love', np.float64(0.4472135954999579)),\n",
+       " ('argentina', np.float64(0.0))]"
+      ]
+     },
+     "execution_count": 184,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# display top three terms\n",
+    "word_scores[:3]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "86ea59ec",
+   "metadata": {},
+   "source": [
+    "### 9.3 TF-IDF with stop words and n-grams"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0bdf4eb",
+   "metadata": {},
+   "source": [
+    "Just as with `CountVectorizer`, we can remove common stop words while creating TF-IDF features."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 185,
+   "id": "ae2d9341",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina', 'beats', 'best', 'france', 'love', 'spain'],\n",
+       "      dtype=object)"
+      ]
+     },
+     "execution_count": 185,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tfidf_no_stop_words = TfidfVectorizer(\n",
+    "    stop_words=\"english\"\n",
+    ")\n",
+    "\n",
+    "feature_matrix = tfidf_no_stop_words.fit_transform(\n",
+    "    text_data\n",
+    ")\n",
+    "tfidf_no_stop_words.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35354152",
+   "metadata": {},
+   "source": [
+    "This can reduce the number of features and prevent very common words from contributing to the representation. As always, whether stop-word removal is appropriate depends on downsteam task."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3083aa79",
+   "metadata": {},
+   "source": [
+    "We can also combine TF-IDF with n-grams. Here, `ngram_range=(1, 2)` creates both unigrams as individual words, and bigrams as pairs of consecutive words. This can help capture short phrases that may carry more meaning than individual words, like \"machine learning\" instead of \"machine\" and \"learning\"."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 186,
+   "id": "0a25b551",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['argentina', 'argentina is', 'beats', 'beats both', 'best', 'both',\n",
+       "       'france', 'france france', 'is', 'is best', 'love', 'love france',\n",
+       "       'spain', 'spain beats'], dtype=object)"
+      ]
+     },
+     "execution_count": 186,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tfidf_ngrams = TfidfVectorizer(\n",
+    "    ngram_range=(1, 2)\n",
+    ")\n",
+    "\n",
+    "feature_matrix = tfidf_ngrams.fit_transform(\n",
+    "    text_data\n",
+    ")\n",
+    "tfidf_ngrams.get_feature_names_out()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5242109e",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout}\n",
+    "The BoW tells us how often a word occurs, and TF-IDF goes one step further and asks how important that word is for distinguishing one document from the others.\n",
+    "- TF rewards words that occur frequently within a document.\n",
+    "- IDF reduces importance of words that occur across many documents.\n",
+    "\n",
+    "This distinction is particularly useful when we want to compare documents or search for documents that are relevant to a particular query. We can use these numerical text vectors to calculate similarity, allowing us to determine which documents are most similar to a search query.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d3ba3b79",
+   "metadata": {},
+   "source": [
+    "## 10. Calculating Text Similarity with Text Vectors"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a1e34277",
+   "metadata": {},
+   "source": [
+    "After converting our documents into TF-IDF vectors, we can use those numerical representations to build a simple **text-search system**. This is one of the most practical applications of text vectors: instead of searching only for exact keyword matches, we can compare a search query with a collection of documents and rank the documents according to how similar they are to the query.\n",
+    "\n",
+    "**Text vectors** are useful in many NLP applications, including search engines, document retrieval, recommendation systems, and information filtering. The basic idea is straightforward. First, we calculate the TF-IDF vectors for a collection of documents. We then use the same fitted `TfidfVectorizer` to transform a new search query into a vector using the vocabulary and weighting scheme learned from the original documents. Finally, we compare the query vector with the document vectors using cosine similarity and rank the documents from most similar to least similar.\n",
+    "\n",
+    "**Cosine similarity** measures the angle between two vectors rather than simply comparing their raw magnitudes. For normalized TF-IDF vectors, the similarity ranges from 0 to 1, where a value closer to 1 indicates greater similarity and a value closer to 0 indicates little or no similarity. In this way, cosine similarity gives us a convenient score that we can use to rank search results."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "237894e7",
+   "metadata": {},
+   "source": [
+    "### 10.1 Calculating cosine similarity"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c9f2c13d",
+   "metadata": {},
+   "source": [
+    "Scikit-learn provides convenient tools for calculating similarity between vectors. We start from the TF-IDF feature matrix we have built in preceeding sections."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 187,
+   "id": "37693816",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Compressed Sparse Row sparse matrix of dtype 'float64'\n",
+       "\twith 8 stored elements and shape (3, 8)>"
+      ]
+     },
+     "execution_count": 187,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "\n",
+    "# create searchable text data\n",
+    "text_data = np.array([\n",
+    "    \"I love France. France!\",\n",
+    "    \"Argentina is best\",\n",
+    "    \"Spain beats both\"\n",
+    "])\n",
+    "\n",
+    "# create TF-IDF vectorizer\n",
+    "tfidf = TfidfVectorizer()\n",
+    "\n",
+    "# learn vocabulary and create document vectors\n",
+    "feature_matrix = tfidf.fit_transform(text_data)\n",
+    "feature_matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5ec2ccae",
+   "metadata": {},
+   "source": [
+    "Now suppose a user enters the following search query \"France is the best\" and want to compare it with the vectors of all three documents. We must transform this query using the same fitted vectorizer that was used for our documents."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 61,
+   "id": "41b72643",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Compressed Sparse Row sparse matrix of dtype 'float64'\n",
+       "\twith 3 stored elements and shape (1, 8)>"
+      ]
+     },
+     "execution_count": 61,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# create a search query\n",
+    "query = \"France is the best\"\n",
+    "\n",
+    "# transform search query into a TF-IDF vector\n",
+    "query_vector = tfidf.transform([query])\n",
+    "query_vector"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5b43103b",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{note}\n",
+    "Note the difference: we use `transform()` instead of `fit_transform()`.\n",
+    "- When we first process our documents, we used `tfidf.fit_transform(text_data)`. The vectorizer learns the vocabulary and calculates the IDF weights from the document collection.\n",
+    "- When we process a new search query, we do not need to fit the vectorizer again. We simply use `tfidf.transform([query])`. This represents the query using the same vocabulary and weighting scheme as the documents, so we can compare their vectors correctly.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8c3620c",
+   "metadata": {},
+   "source": [
+    "Now we can compare the query vector with every document vector. Here we use `linear_kernel` from scikit-learn."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 188,
+   "id": "fd9fcad4",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0.51639778, 0.66666667, 0.        ])"
+      ]
+     },
+     "execution_count": 188,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.metrics.pairwise import linear_kernel\n",
+    "\n",
+    "# calculate cosine similarity between query and every document\n",
+    "cosine_similarities = linear_kernel(\n",
+    "    query_vector,\n",
+    "    feature_matrix\n",
+    ").flatten()\n",
+    "\n",
+    "# display similarity scores\n",
+    "cosine_similarities"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f1c40bae",
+   "metadata": {},
+   "source": [
+    "We get scores [0.5164, 0.6667, 0.0000].\n",
+    "These values correspond to the documents in their original order.\n",
+    "- \"I love France. France!\" → 0.5164\n",
+    "- \"Argentina is best\"      → 0.6667\n",
+    "- \"Spain beats both\"       → 0.0000\n",
+    "    - A score of 0 indicates that the query and document have no overlapping terms in TF-IDF representation."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "51fdeb31",
+   "metadata": {},
+   "source": [
+    "### 10.2 Ranking the search results"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b5a1482b",
+   "metadata": {},
+   "source": [
+    "For a small number of documents, this ordering may be sufficient because we can simply select the document with the highest similarity score. However, when the collection contains hundreds of documents, reviewing the entire output to find the best match can be time-consuming. Therefore, we should sort the documents by their similarity scores and display the most relevant documents first.\n",
+    "\n",
+    "In a real search application, we normally do not want to return every document. Instead, we might return only the top `k` results. NumPy's `argsort()` returns the indices that would sort an array. In code snippet below, the `[::-1]` reverses the order so that the highest similarity score comes first. We can then retrieve the documents in ranked order."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 189,
+   "id": "c7bbee6a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.667 → Argentina is best\n",
+      "0.516 → I love France. France!\n",
+      "0.000 → Spain beats both\n"
+     ]
+    }
+   ],
+   "source": [
+    "# get indices of top three results\n",
+    "top_k = 3\n",
+    "\n",
+    "# sort document indices by similarity\n",
+    "top_indices = cosine_similarities.argsort()[-top_k:][::-1]\n",
+    "\n",
+    "# display top results\n",
+    "for index in top_indices:\n",
+    "    print(\n",
+    "        f\"{cosine_similarities[index]:.3f} \"\n",
+    "        f\"→ {text_data[index]}\"\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ce2d2983",
+   "metadata": {},
+   "source": [
+    "**We have now created a very simple text-search and ranking system**."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1466506d",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-danger'>\n",
+    "\n",
+    ":::{questions} Why does \"France is best\" rank first?\n",
+    ":class: dropdown\n",
+    "\n",
+    "At first glance, this result may seem surprising. The query contains the word \"France\", so we might expect \"I love France. France!\" to be the most relevant result.\n",
+    "- However, cosine similarity is based on the vector representation, not human interpretation of the sentence.\n",
+    "    - The query is \"France is the best\", and the document \"Argentina is best\". They shares two important terms with the query: \"is\" and \"best\".\n",
+    "    - The France document shares just one term with the query.\n",
+    "- Because of the TF-IDF weights in this small corpus, the combination of \"is\" and \"best\" produces a higher cosine similarity than the single shared term \"france\".\n",
+    "\n",
+    "**A text-similarity algorithm does not necessarily understand the meaning of a sentence. It compares the numerical representations we provide to it**.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7310367a",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout} TF-IDF gives us a numerical representation of documents, and cosine similarity allows to compare those representations.\n",
+    "- By transforming a user's search query with the same fitted TF-IDF vectorizer, we can compare query against a collection of documents and rank them according to similarity.\n",
+    "- However, because TF-IDF primarily relies on shared words, it does not truly understand semantic meaning.\n",
+    "    - A query about \"automobiles\" may not match a document containing only \"cars\", even though a human knows they are closely related.\n",
+    "- That limitation motivates the next generation of NLP techniques: **dense text vectors** and **semantic representations**, which can capture relationships between words and documents beyond exact word matching.\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "25b03705",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-success'>\n",
+    "\n",
+    ":::{exercise} Simple exercises for the text-search and ranking system\n",
+    "\n",
+    "First try creating a larger collection of documents and fit a new TF-IDF vectorizer, and then creating several search queries.\n",
+    "\n",
+    "```python\n",
+    "import numpy as np\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "from sklearn.metrics.pairwise import cosine_similarity\n",
+    "\n",
+    "documents = np.array([\n",
+    "    \"I would love to visit Spain someday\",\n",
+    "    \"Argentina is famous for its passionate football culture\",\n",
+    "    \"France is known for its rich history and cuisine\",\n",
+    "    \"Sweden has many beautiful lakes and forests\",\n",
+    "    \"Germany has a strong engineering and manufacturing tradition\",\n",
+    "    \"Norway is well known for its fjords and natural landscapes\"\n",
+    "])\n",
+    "\n",
+    "# create TF-IDF matrix\n",
+    "vectorizer = TfidfVectorizer()\n",
+    "document_matrix = vectorizer.fit_transform(documents)\n",
+    "\n",
+    "# Search function\n",
+    "def search_documents(query, vectorizer, document_matrix, documents, top_k=3):\n",
+    "    query_vector = vectorizer.transform([query])\n",
+    "    # calculate cosine similarity\n",
+    "    similarities = cosine_similarity(\n",
+    "        query_vector,\n",
+    "        document_matrix\n",
+    "    ).flatten()\n",
+    "    # get indices of top matching documents\n",
+    "    top_indices = similarities.argsort()[::-1][:top_k]\n",
+    "    # return documents and scores\n",
+    "    results = [\n",
+    "        (documents[i], similarities[i])\n",
+    "        for i in top_indices\n",
+    "    ]\n",
+    "    return results\n",
+    "\n",
+    "# create search queries\n",
+    "queries = [\n",
+    "    \"Spain\",\n",
+    "    \"Argentina\",\n",
+    "    \"France\",\n",
+    "    \"Sweden\",\n",
+    "    \"Germany\",\n",
+    "    \"Norway\"\n",
+    "]\n",
+    "\n",
+    "# search for each query\n",
+    "for query in queries:\n",
+    "    print(f\"\\nQuery: {query}\")\n",
+    "    results = search_documents(\n",
+    "        query,\n",
+    "        vectorizer,\n",
+    "        document_matrix,\n",
+    "        documents,\n",
+    "        top_k=3\n",
+    "    )\n",
+    "    for document, score in results:\n",
+    "        print(f\"{score:.3f} → {document}\")\n",
+    "```\n",
+    "\n",
+    "Try to investigate:\n",
+    "- Which document ranks first for each query?\n",
+    "- How does the ranking change when the query contains more words?\n",
+    "- What happens when a query contains a word that does not appear in the documents?\n",
+    "- Which common words receive lower influence?\n",
+    "- Why might a search engine need more sophisticated methods than TF-IDF?\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f0887ee",
+   "metadata": {},
+   "source": [
+    "## 11. Performing Sentiment Analysis with a Pretrained Classifier"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6c6b5fb4",
+   "metadata": {},
+   "source": [
+    "After preprocessing and transforming text data, we can extract higher-level information from text. **Sentiment analysis** provides a practical example of how we can move beyond basic text preprocessing and use a pretrained NLP model to extract meaningful information from unstructured text.\n",
+    "\n",
+    "Suppose we have a collection of customer reviews, tweets, survey responses, or other text and want to determine whether each observation expresses a positive or negative sentiment. The resulting sentiment label or score can then be used directly for analysis or incorporated as a feature in a downstream machine learning or deep learning model.\n",
+    "\n",
+    "Rather than building and training a sentiment classifier from scratch, we can take advantage of pretrained NLP models. The Hugging Face transformers library is one of the most widely used libraries for modern NLP and provides convenient APIs for both using pretrained models and training or fine-tuning our own models.\n",
+    "\n",
+    "In this example, we use its high-level `pipeline()` API to create a sentiment-analysis classifier. The pretrained model takes raw text as input and returns a predicted sentiment label together with a confidence score. This provides a simple demonstration of how pretrained NLP models can be integrated into a machine learning workflow to classify text, generate features, and extract useful information from otherwise unstructured data. We will explore the transformers library and modern NLP techniques in greater depth later, but for now, the important idea is that we can use a pretrained model to perform a sophisticated NLP task with only a few lines of Python."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "03e49f3e",
+   "metadata": {},
+   "source": [
+    "### 11.1 Build a sentiment analysis classifier"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "803f3cae",
+   "metadata": {},
+   "source": [
+    "The Hugging Face transformers library provides a convenient `pipeline()` function that allows us to use pretrained models without having to implement the underlying neural network architecture ourselves."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 190,
+   "id": "914a6274",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "feb895e9cd844d28bc657e6350396586",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Loading weights:   0%|          | 0/104 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import torch\n",
+    "from transformers import pipeline\n",
+    "\n",
+    "# create an NLP pipeline for sentiment analysis\n",
+    "classifier = pipeline(\"sentiment-analysis\",\n",
+    "    model=\"distilbert/distilbert-base-uncased-finetuned-sst-2-english\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bce8c35a",
+   "metadata": {},
+   "source": [
+    "Then we provide a sentence to the sentiment-analysis classifier, which will return a result containing a sentiment label and a confidence score."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 191,
+   "id": "861828c5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[{'label': 'NEGATIVE', 'score': 0.9998020529747009}]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# classify a negative statement\n",
+    "sentiment_1 = classifier(\n",
+    "    \"I hate machine learning! It's the absolute worst.\"\n",
+    ")\n",
+    "print(sentiment_1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 192,
+   "id": "e1b4561c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[{'label': 'POSITIVE', 'score': 0.999546229839325}]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# classify a positive statement\n",
+    "sentiment_2 = classifier(\n",
+    "    \"Machine learning is the absolute \"\n",
+    "    \"bees knees. I love it so much!\"\n",
+    ")\n",
+    "print(sentiment_2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2096ef5c",
+   "metadata": {},
+   "source": [
+    "### 11.2 Classifying multiple texts"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "609d540a",
+   "metadata": {},
+   "source": [
+    "The pipeline can also process multiple observations at once. This allows us to process an entire collection of text observations rather than calling the classifier separately for every sentence."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 193,
+   "id": "5d804adb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "I love this product!\n",
+      "{'label': 'POSITIVE', 'score': 0.9998855590820312}\n",
+      "\n",
+      "This is the worst experience ever.\n",
+      "{'label': 'NEGATIVE', 'score': 0.9997727274894714}\n",
+      "\n",
+      "The product is okay.\n",
+      "{'label': 'POSITIVE', 'score': 0.9998345375061035}\n",
+      "\n",
+      "Absolutely fantastic service!\n",
+      "{'label': 'POSITIVE', 'score': 0.9998830556869507}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# create a collection of text observations\n",
+    "texts = [\n",
+    "    \"I love this product!\",\n",
+    "    \"This is the worst experience ever.\",\n",
+    "    \"The product is okay.\",\n",
+    "    \"Absolutely fantastic service!\"\n",
+    "]\n",
+    "\n",
+    "# classify all observations\n",
+    "results = classifier(texts)\n",
+    "\n",
+    "# display results\n",
+    "for text, result in zip(texts, results):\n",
+    "    print(text)\n",
+    "    print(result)\n",
+    "    print()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4d109ce3",
+   "metadata": {},
+   "source": [
+    "As shown in preceeding results, in addition to the labels \"POSITIVE\" and \"NEGATIVE\", the classifier also provides a confidence score. We can combine the labels and scores into a more useful structure."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 196,
+   "id": "e6dfd6ef",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Text: I love this product!\n",
+      "Sentiment: POSITIVE\n",
+      "Confidence: 1.000\n",
+      "\n",
+      "Text: This is the worst experience ever.\n",
+      "Sentiment: NEGATIVE\n",
+      "Confidence: 1.000\n",
+      "\n",
+      "Text: The product is okay.\n",
+      "Sentiment: POSITIVE\n",
+      "Confidence: 1.000\n",
+      "\n",
+      "Text: Absolutely fantastic service!\n",
+      "Sentiment: POSITIVE\n",
+      "Confidence: 1.000\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# display sentiment and confidence for each observation\n",
+    "for text, result in zip(texts, results):\n",
+    "    print(\n",
+    "        f\"Text: {text}\\n\"\n",
+    "        f\"Sentiment: {result['label']}\\n\"\n",
+    "        f\"Confidence: {result['score']:.3f}\\n\"\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c566bab1",
+   "metadata": {},
+   "source": [
+    "### 11.3 Using sentiment as a feature"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3f1dddc4",
+   "metadata": {},
+   "source": [
+    "One of the most useful ideas here is that the model's output does not have to be the final result of our analysis. Instead, sentiment can become a feature in a larger data-processing or machine-learning pipeline. For example, suppose we have customer reviews, from which we can create a simple sentiment feature."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 197,
+   "id": "ac02b33e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1, 0, 1, 0]\n"
+     ]
+    }
+   ],
+   "source": [
+    "reviews = [\n",
+    "    \"The service was excellent.\",\n",
+    "    \"I waited for hours and hated the experience.\",\n",
+    "    \"The product works well.\",\n",
+    "    \"The quality was terrible.\"\n",
+    "]\n",
+    "\n",
+    "# predict sentiment\n",
+    "sentiment_results = classifier(reviews)\n",
+    "\n",
+    "# convert sentiment labels into a binary feature\n",
+    "sentiment_feature = [\n",
+    "    1 if result[\"label\"] == \"POSITIVE\" else 0\n",
+    "    for result in sentiment_results\n",
+    "]\n",
+    "print(sentiment_feature)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3de54c0b",
+   "metadata": {},
+   "source": [
+    "We could then combine this text-based feature with other structured data, such as customer age, purchase amount, number of previous purchases, product category, and sentiment score.\n",
+    "\n",
+    "By combining these different types of information, we can create a richer feature set for downstream machine learning or deep learning tasks. For example, the resulting features could be used to predict customer behavior, classify customers, recommend products, or estimate the likelihood of a future purchase."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c774c899",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-success'>\n",
+    "\n",
+    ":::{exercise}\n",
+    "\n",
+    "Try the sentiment classifier with your own examples\n",
+    "```\n",
+    "examples = [\n",
+    "    \"The movie was absolutely fantastic!\",\n",
+    "    \"I would never recommend this product.\",\n",
+    "    \"The food was okay, nothing special.\",\n",
+    "    \"This is one of the best experiences I've ever had.\"\n",
+    "]\n",
+    "\n",
+    "# Classify the examples\n",
+    "results = classifier(examples)\n",
+    "\n",
+    "# Display predictions\n",
+    "for text, result in zip(examples, results):\n",
+    "    print(\n",
+    "        f\"{result['label']:>8} \"\n",
+    "        f\"({result['score']:.3f}) → {text}\"\n",
+    "    )\n",
+    "```\n",
+    "Now experiment with sentences containing strongly positive language, strongly negative language, neutral language, mixed or contradictory opinions, and even sarcasm or humor.\n",
+    "```\n",
+    "test_text = [\n",
+    "    \"I absolutely love this!\",\n",
+    "    \"I absolutely hate this!\",\n",
+    "    \"It was fine.\",\n",
+    "    \"Great job... if your goal was to make everything worse.\"\n",
+    "]\n",
+    "\n",
+    "results = classifier(test_text)\n",
+    "\n",
+    "for text, result in zip(test_text, results):\n",
+    "    print(\n",
+    "        f\"{result['label']} \"\n",
+    "        f\"({result['score']:.3f}) → {text}\"\n",
+    "    )\n",
+    "```\n",
+    "\n",
+    "Try to run the hands-on exercises and answer:\n",
+    "- Which examples does the model classify confidently?\n",
+    "- Which examples produce lower confidence?\n",
+    "- How does the model handle neutral language?\n",
+    "- How does it handle sarcasm?\n",
+    "- Does the model always agree with your interpretation of the sentence?\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "74c8f9d5",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-warning'>\n",
+    "\n",
+    ":::{callout} Important considerations\n",
+    "- A pretrained sentiment classifier is convenient, but it is not universally accurate. Its performance depends on the model, training data, language, domain, and type of text it encounters.\n",
+    "    - For example, a model trained primarily on movie reviews may behave differently when analyzing medical notes, financial reports, product reviews, or social-media posts. Specialized domains may require a model that has been fine-tuned on relevant data.\n",
+    "- We should also remember that the confidence score is the model's confidence in its prediction, not necessarily a guarantee that the prediction is correct.\n",
+    "- Therefore, pretrained classifiers are best viewed as useful tools for extracting signals from text rather than infallible sources of truth.\n",
+    ":::\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af7961eb",
+   "metadata": {},
+   "source": [
+    "## 12. Summary of Text Wrangling Procedures"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "61f0b2e7",
+   "metadata": {},
+   "source": [
+    "With raw text data in hand, we should follow three main steps to wrangle and prepare the data for analysis.\n",
+    "- **Remove punctuation** → **Tokenization** → **Remove Stop Words** → **Stemming/Lemmatization**\n",
+    "    - These are text preprocessing/normalization steps, to get cleaned text data.\n",
+    "- **POS Tagging** → **NER**\n",
+    "    - These are linguistic analysis tasks, to get structured linguistic information.\n",
+    "- **BoW** → **TF-IDF**\n",
+    "    - These are are feature/vectorization methods, to get numerical representations (vectors).\n",
+    "- **Text similarity is not a text data wrangling method**; rather, it is an NLP application for quantifying the semantic or lexical similarity between textual data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2aafae91",
+   "metadata": {},
+   "source": [
+    "| Step | Category | Purpose |\n",
+    "| :--: | :------: | :-----: |\n",
+    "| Remove punctuation | Text preprocessing / cleaning | Remove unnecessary characters |\n",
+    "| Tokenization | Text preprocessing | Split text into words/tokens |\n",
+    "| Remove stop words | Text preprocessing | Remove common, low-information words |\n",
+    "| Stemming / Lemmatization | Text normalization | Reduce words to a common/base form |\n",
+    "| POS tagging | Linguistic analysis | Identify grammatical roles |\n",
+    "| NER | Linguistic analysis | Identify entities such as people, organizations, locations |\n",
+    "| BoW | Feature extraction / vectorization | Convert text into numerical vectors |\n",
+    "| TF-IDF | Feature extraction / vectorization | Create weighted numerical vectors |\n",
+    "| Text similarity | NLP task / analysis | Measure how similar two texts are |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fad2495d",
+   "metadata": {},
+   "source": [
+    "The big picture of wrangling text data can be described by:\n",
+    "```console\n",
+    "                    NLP TEXT PROCESSING\n",
+    "                           │\n",
+    "        ┌──────────────────┼──────────────────┐\n",
+    "        ↓                  ↓                  ↓\n",
+    " Text Preprocessing   Linguistic Analysis   Feature Extraction\n",
+    "        │                  │                  │\n",
+    "        ├─ Punctuation     ├─ POS             ├─ BoW\n",
+    "        ├─ Tokenization    └─ NER             └─ TF-IDF\n",
+    "        ├─ Stop words\n",
+    "        └─ Stemming/\n",
+    "           Lemmatization\n",
+    "                                                ↓\n",
+    "                                                ↓\n",
+    "                                         NLP Applications\n",
+    "                                                │\n",
+    "                                         Text Similarity\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2604111b",
+   "metadata": {},
+   "source": [
+    "<div class='alert alert-info'>\n",
+    "\n",
+    ":::{keypoints}\n",
+    "- Text preprocessing transforms unstructured text into cleaner and more consistent data for analysis and machine learning.\n",
+    "- Tokenization, stop-word removal, stemming, PoS tagging, and named-entity recognition provide different ways to analyze and structure textual information.\n",
+    "- Bag-of-Words and n-gram representations convert text into numerical features, while TF-IDF assigns greater importance to informative terms.\n",
+    "- TF-IDF vectors and cosine similarity can be used to build simple text-search and document-retrieval systems that rank documents by relevance.\n",
+    "- Pretrained NLP models can extract higher-level information, such as sentiment, and their outputs can be used as features in downstream data-analysis and machine-learning tasks.\n",
+    ":::\n",
+    "</div>"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "practical_data_wraggling",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.16"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

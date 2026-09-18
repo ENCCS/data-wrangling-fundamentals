@@ -1,0 +1,3916 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exploring Dates, Times, and Time-Series Data &mdash; Practical Data Wrangling</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=187304be"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../../_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Wrangling Text Data" href="../5-wrangling-text-data/" />
+    <link rel="prev" title="Processing Categorical Data" href="../3-processing-categorical-data/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../" class="icon icon-home">
+            Practical Data Wrangling
+              <img src="../../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../1-getting-to-know-your-data/">Getting to Know Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../3-processing-categorical-data/">Processing Categorical Data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Exploring Dates, Times, and Time-Series Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#uci-individual-household-electric-power-consumption-dataset">1. UCI Individual Household Electric Power Consumption Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-date-strings-to-datetime">2. From Date Strings to Datetime</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#convert-strings-to-datetime-type">2.1 Convert strings to datetime type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#explicit-formats-to-combine-date-and-time">2.2 Explicit formats to combine Date and Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-invalid-dates">2.3 Handling invalid dates</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-time-zones">3. Handling Time Zones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#localization-assigning-a-local-time-zone">3.1 Localization: Assigning a local time zone</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conversion-changing-time-zones">3.2 Conversion: Changing time zones</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#selecting-time-series-data">4. Selecting Time-Series Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#select-a-specific-date">4.1 Select a specific date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#select-a-specific-period">4.2 Select a specific period</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#calculating-differences-and-elapsed-time-in-time-series-data">5. Calculating Differences and Elapsed Time in Time-Series Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-lagged-features-using-the-past-to-predict-the-future">6. Creating Lagged Features: Using the Past to Predict the Future</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-one-step-lag">6.1 Creating a one-step lag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connect-lagged-features-for-forecasting">6.2 Connect lagged features for forecasting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-a-simple-forecasting-dataset">6.3 Building a simple forecasting dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-rolling-time-windows">7. Using Rolling Time Windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-rolling-window">7.1 Creating a rolling window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rolling-sum-minimum-maximum">7.2 Rolling sum, minimum &amp; maximum</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-missing-data-in-time-series">8. Handling Missing Data in Time Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#missing-values-vs-missing-timestamps">8.1 Missing values vs. missing timestamps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filling-missing-values">8.2 Filling missing values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6-transforming-image-data/">Transforming Image Data</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">Practical Data Wrangling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Exploring Dates, Times, and Time-Series Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/data-wrangling-fundamentals/blob/main/content/episodes/4-exploring-dates-times-and-time-series-data.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="exploring-dates-times-and-time-series-data">
+<h1>Exploring Dates, Times, and Time-Series Data<a class="headerlink" href="#exploring-dates-times-and-time-series-data" title="Link to this heading"></a></h1>
+<p>Dates and times (datetimes), such as the time of a particular sale or the date of a public health statistic, are frequently encountered during preprocessing for data analysis and machine learning. Longitudinal data, or time-series data, is data that is collected repeatedly for the same variables over points in time. <strong>Dates and times data are temporal data that capture when an event occurs</strong>, while <strong>time-series data is widely used to understand patterns, trends, and changes over time</strong>. Because machine-learning algorithms generally require numerical and consistently formatted inputs, dates and times often need to be transformed into useful numerical features before they can be used effectively in a model.</p>
+<p>In this episode, we will take a practical approach to handling numerical and temporal aspects of Dates, Times, and Time-Series Data. We will build a toolbox of strategies for converting date and time values into ready-to-use features, including working with time zones, selecting observations by date and time, extracting useful components such as year, month, and day, calculating differences between dates, creating lagged features, and using rolling time windows. Specifically, we will focus on time-series capabilities of the pandas library, which provides a centralized set of tools for working with temporal data and integrates naturally with Python’s general-purpose <code class="docutils literal notranslate"><span class="pre">datetime</span></code> functionality.</p>
+<div class='alert alert-info'>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Convert and manipulate date and time data using pandas datetime functionality.</p></li>
+<li><p>Select and filter observations based on dates, times, and time periods.</p></li>
+<li><p>Create useful time-based features, including elapsed time, lagged features, and rolling-window statistics.</p></li>
+<li><p>Identify and appropriately handle missing values and missing timestamps in time-series data.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-success'>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>40 minutes teaching</p></li>
+<li><p>20 minutes exercising/discussion</p></li>
+</ul>
+</div>
+</div><section id="uci-individual-household-electric-power-consumption-dataset">
+<h2>1. UCI Individual Household Electric Power Consumption Dataset<a class="headerlink" href="#uci-individual-household-electric-power-consumption-dataset" title="Link to this heading"></a></h2>
+<p>The <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a> contains 2,075,259 measurements of electricity consumption from a single household in Sceaux, France, recorded at one-minute intervals from December 2006 to November 2010. It includes date and time information together with numerical measurements such as active power, reactive power, voltage, current intensity, and electricity consumption from three household sub-meterings. This dataset is particularly useful for learning how to handle numerical and time-series data, and it also contains missing values that can be used for data-cleaning exercises.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://raw.githubusercontent.com/jbrownlee/Datasets/master/household_power_consumption.zip"</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="s2">"?"</span><span class="p">)</span>
+
+<span class="c1"># quick preview and inspect a dataset's structure, column names, and data types</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># df.tail() # df.sample(5)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>16/12/2006</td>
+      <td>17:24:00</td>
+      <td>4.216</td>
+      <td>0.418</td>
+      <td>234.84</td>
+      <td>18.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>16/12/2006</td>
+      <td>17:25:00</td>
+      <td>5.360</td>
+      <td>0.436</td>
+      <td>233.63</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>16.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>16/12/2006</td>
+      <td>17:26:00</td>
+      <td>5.374</td>
+      <td>0.498</td>
+      <td>233.29</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>16/12/2006</td>
+      <td>17:27:00</td>
+      <td>5.388</td>
+      <td>0.502</td>
+      <td>233.74</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>16/12/2006</td>
+      <td>17:28:00</td>
+      <td>3.666</td>
+      <td>0.528</td>
+      <td>235.68</td>
+      <td>15.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get number of rows and columns in a DataFrame</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2075259, 9)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print a concise summary of a DataFrame</span>
+<span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 2075259 entries, 0 to 2075258
+Data columns (total 9 columns):
+ #   Column                 Dtype  
+---  ------                 -----  
+ 0   Date                   str    
+ 1   Time                   str    
+ 2   Global_active_power    float64
+ 3   Global_reactive_power  float64
+ 4   Voltage                float64
+ 5   Global_intensity       float64
+ 6   Sub_metering_1         float64
+ 7   Sub_metering_2         float64
+ 8   Sub_metering_3         float64
+dtypes: float64(7), str(2)
+memory usage: 142.5 MB
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># basic numerical analysis</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span> <span class="c1"># df.Global_active_power</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       Global_active_power  Global_reactive_power       Voltage  \
+count         2.049280e+06           2.049280e+06  2.049280e+06   
+mean          1.091615e+00           1.237145e-01  2.408399e+02   
+std           1.057294e+00           1.127220e-01  3.239987e+00   
+min           7.600000e-02           0.000000e+00  2.232000e+02   
+25%           3.080000e-01           4.800000e-02  2.389900e+02   
+50%           6.020000e-01           1.000000e-01  2.410100e+02   
+75%           1.528000e+00           1.940000e-01  2.428900e+02   
+max           1.112200e+01           1.390000e+00  2.541500e+02   
+
+       Global_intensity  Sub_metering_1  Sub_metering_2  Sub_metering_3  
+count      2.049280e+06    2.049280e+06    2.049280e+06    2.049280e+06  
+mean       4.627759e+00    1.121923e+00    1.298520e+00    6.458447e+00  
+std        4.444396e+00    6.153031e+00    5.822026e+00    8.437154e+00  
+min        2.000000e-01    0.000000e+00    0.000000e+00    0.000000e+00  
+25%        1.400000e+00    0.000000e+00    0.000000e+00    0.000000e+00  
+50%        2.600000e+00    0.000000e+00    0.000000e+00    1.000000e+00  
+75%        6.400000e+00    0.000000e+00    1.000000e+00    1.700000e+01  
+max        4.840000e+01    8.800000e+01    8.000000e+01    3.100000e+01  
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># average, minimum and maximum power consumption</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Average of Global_active_power:"</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Minimum of Global_active_power:"</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Maximum of Global_active_power:"</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Average of Global_active_power: 1.0916150365006245
+Minimum of Global_active_power: 0.076
+Maximum of Global_active_power: 11.122
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="from-date-strings-to-datetime">
+<h2>2. From Date Strings to Datetime<a class="headerlink" href="#from-date-strings-to-datetime" title="Link to this heading"></a></h2>
+<p>Once we have imported the dataset, one of the first preprocessing tasks is to make sure that information representing dates and times is stored in a format that Python and pandas can understand.</p>
+<p>In this dataset, the <code class="docutils literal notranslate"><span class="pre">Date</span></code> (the first column) and <code class="docutils literal notranslate"><span class="pre">Time</span></code> (the second column) columns initially contain values as <strong>strings</strong>, even though they represent meaningful points in time. The output info tells us that pandas currently sees <code class="docutils literal notranslate"><span class="pre">Date</span></code> and <code class="docutils literal notranslate"><span class="pre">Time</span></code> as text rather than datetime information.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">]]</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>         Date      Time
+0  16/12/2006  17:24:00
+1  16/12/2006  17:25:00
+2  16/12/2006  17:26:00
+3  16/12/2006  17:27:00
+4  16/12/2006  17:28:00 
+
+Date    str
+Time    str
+dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+<section id="convert-strings-to-datetime-type">
+<h3>2.1 Convert strings to datetime type<a class="headerlink" href="#convert-strings-to-datetime-type" title="Link to this heading"></a></h3>
+<p>Here, we will use <code class="docutils literal notranslate"><span class="pre">pd.to_datetime()</span></code> to convert these strings into pandas datetime values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%d</span><span class="s2">/%m/%Y"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span> <span class="c1"># now it is a datetime type</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Date                     datetime64[us]
+Time                                str
+Global_active_power             float64
+Global_reactive_power           float64
+Voltage                         float64
+Global_intensity                float64
+Sub_metering_1                  float64
+Sub_metering_2                  float64
+Sub_metering_3                  float64
+dtype: object
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>4.216</td>
+      <td>0.418</td>
+      <td>234.84</td>
+      <td>18.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>5.360</td>
+      <td>0.436</td>
+      <td>233.63</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>16.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>5.374</td>
+      <td>0.498</td>
+      <td>233.29</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>5.388</td>
+      <td>0.502</td>
+      <td>233.74</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>3.666</td>
+      <td>0.528</td>
+      <td>235.68</td>
+      <td>15.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Instead of ordinary strings, pandas now recognizes these values as dates, from which we can perform operations such as extracting the year, month, and day.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Month"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Day"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>4.216</td>
+      <td>0.418</td>
+      <td>234.84</td>
+      <td>18.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>5.360</td>
+      <td>0.436</td>
+      <td>233.63</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>16.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>5.374</td>
+      <td>0.498</td>
+      <td>233.29</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>5.388</td>
+      <td>0.502</td>
+      <td>233.74</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>3.666</td>
+      <td>0.528</td>
+      <td>235.68</td>
+      <td>15.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="explicit-formats-to-combine-date-and-time">
+<h3>2.2 Explicit formats to combine Date and Time<a class="headerlink" href="#explicit-formats-to-combine-date-and-time" title="Link to this heading"></a></h3>
+<p>For time-series analysis, having separate <code class="docutils literal notranslate"><span class="pre">Date</span></code> and <code class="docutils literal notranslate"><span class="pre">Time</span></code> columns is often less convenient than having one <strong>timestamp</strong>, which contains information such as the year, month, day, hour, minute, and second.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>        Date      Time            Datetime
+0 2006-12-16  17:24:00 2006-12-16 17:24:00
+1 2006-12-16  17:25:00 2006-12-16 17:25:00
+2 2006-12-16  17:26:00 2006-12-16 17:26:00
+3 2006-12-16  17:27:00 2006-12-16 17:27:00
+4 2006-12-16  17:28:00 2006-12-16 17:28:00
+</pre></div>
+</div>
+</div>
+</div>
+<p>A timestamp (the <code class="docutils literal notranslate"><span class="pre">Datetime</span></code> column) is convenient for us to select periods, to calculate time differences, to create lagged features, and work with rolling windows as we will explore in following sections.</p>
+</section>
+<section id="handling-invalid-dates">
+<h3>2.3 Handling invalid dates<a class="headerlink" href="#handling-invalid-dates" title="Link to this heading"></a></h3>
+<p>Real-world datasets are rarely perfect. We may encounter values that do not represent valid dates. For example, in the toy dateset below, the value <code class="docutils literal notranslate"><span class="pre">31/02/2007</span></code> is invalid because February does not have 31 days.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
+    <span class="s2">"16/12/2006"</span><span class="p">,</span>
+    <span class="s2">"17/12/2006"</span><span class="p">,</span>
+    <span class="s2">"31/02/2007"</span><span class="p">,</span>
+    <span class="s2">"18/12/2006"</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>If we attempt <code class="docutils literal notranslate"><span class="pre">pd.to_datetime(dates,</span> <span class="pre">format=&quot;%d/%m/%Y&quot;)</span></code>, pandas can raise a parsing error like <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">day</span> <span class="pre">is</span> <span class="pre">out</span> <span class="pre">of</span> <span class="pre">range</span> <span class="pre">for</span> <span class="pre">month,</span> <span class="pre">at</span> <span class="pre">position</span> <span class="pre">2</span></code> because it cannot interpret the invalid value as a real date.
+For safely handle values that cannot be converted, we can use <code class="docutils literal notranslate"><span class="pre">errors=&quot;coerce&quot;</span></code>, which can tell pandas to convert invalid dates into missing values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
+    <span class="s2">"16/12/2006"</span><span class="p">,</span>
+    <span class="s2">"17/12/2006"</span><span class="p">,</span>
+    <span class="s2">"31/02/2007"</span><span class="p">,</span>
+    <span class="s2">"18/12/2006"</span>
+<span class="p">])</span>
+
+<span class="c1"># pd.to_datetime(dates, format="%d/%m/%Y") # leads to "ValueError: day is out of range for month"</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%d</span><span class="s2">/%m/%Y"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0   2006-12-16
+1   2006-12-17
+2          NaT
+3   2006-12-18
+dtype: datetime64[us]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The invalid date becomes <code class="docutils literal notranslate"><span class="pre">NaT</span></code>, which means <em>Not a Time</em> and is the datetime equivalent of a missing value such as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
+<p>Let’s apply the same idea to the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, and check how many dates could not be converted. If the result is greater than zero, we know that some values could not be interpreted as valid dates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%d</span><span class="s2">/%m/%Y"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"coerce"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0
+</pre></div>
+</div>
+</div>
+</div>
+<p>The output <code class="docutils literal notranslate"><span class="pre">0</span></code> means there is no invalid dates in the dataset.</p>
+</section>
+</section>
+<section id="handling-time-zones">
+<h2>3. Handling Time Zones<a class="headerlink" href="#handling-time-zones" title="Link to this heading"></a></h2>
+<p>After converting the Date and Time columns into a proper Datetime column, the next challenge is understanding <strong>time zones</strong>. A timestamp such as 2006-12-16 17:24:00 tells us the local clock time, but by itself it does not tell us where that time occurred. This distinction becomes particularly important when combining time-series data collected from different locations.</p>
+<p>Using the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, we will see how to assign a timezone to our timestamps and then convert them to other time zones without changing the actual moment represented by the observation.</p>
+<p>We contine with the combined timestamp <code class="docutils literal notranslate"><span class="pre">Datetime</span></code> we created in the previous section.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Datetime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>2006-12-16 17:24:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>2006-12-16 17:25:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>2006-12-16 17:26:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>2006-12-16 17:27:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>2006-12-16 17:28:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>At this point, our timestamp is <strong>naive datetime</strong>, which contains a date and time but has no timezone information attached to it. We can verify this using <code class="docutils literal notranslate"><span class="pre">df[&quot;Datetime&quot;].dt.tz</span></code> and the output should be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>None
+</pre></div>
+</div>
+</div>
+</div>
+<p>This indicates that pandas knows that “the observation occurred at 17:24”. But it does not know “the observation occurred at 17:24 in which timezone?”. This distinction may not matter when working exclusively with one local dataset, but it becomes important when we combine datasets from different geographic locations.
+For example, when data analysts in Sweden and Greece share observational data for analysis, or even schedule meetings, they should clearly specify which time zone is being used to avoid misunderstandings, scheduling conflicts, or errors in interpreting timestamps.</p>
+<p>The timestamp <code class="docutils literal notranslate"><span class="pre">2006-12-16</span> <span class="pre">17:24:00</span></code> could represent <code class="docutils literal notranslate"><span class="pre">17:24</span> <span class="pre">in</span> <span class="pre">London</span></code>, <code class="docutils literal notranslate"><span class="pre">17:24</span> <span class="pre">in</span> <span class="pre">Stockholm</span></code>, or <code class="docutils literal notranslate"><span class="pre">17:24</span> <span class="pre">in</span> <span class="pre">New</span> <span class="pre">York</span></code>. These are not the same moment in time.
+A timezone-aware datetime contains both timestamp and information about its timezone, such as <code class="docutils literal notranslate"><span class="pre">2006-12-16</span> <span class="pre">17:24:00+01:00</span></code>, in which the <code class="docutils literal notranslate"><span class="pre">+01:00</span></code> tells us that the timestamp is one hour ahead of UTC.</p>
+<div class='alert alert-info'>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>UTC</strong> (Coordinated Universal Time) is the primary time standard used worldwide. It provides a common reference point for expressing and comparing times across different time zones, without being affected by daylight saving time.</p>
+</div>
+</div><section id="localization-assigning-a-local-time-zone">
+<h3>3.1 Localization: Assigning a local time zone<a class="headerlink" href="#localization-assigning-a-local-time-zone" title="Link to this heading"></a></h3>
+<p>When assigning a timezone to a naive datetime, it does not change the clock time.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1"># get computer's local timezone</span>
+<span class="n">local_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span>
+<span class="n">local_tz</span> <span class="o">=</span> <span class="n">local_now</span><span class="o">.</span><span class="n">tzinfo</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">local_now</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">local_tz</span><span class="p">)</span>
+
+<span class="c1"># if Datetime contains UTC timestamps</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Datetime_Stockholm"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="s2">"UTC"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="n">local_tz</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Datetime_Stockholm"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-09-15 12:42:03.708407+02:00
+CEST
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Datetime</th>
+      <th>Datetime_Stockholm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>2006-12-16 17:24:00</td>
+      <td>2006-12-16 19:24:00+02:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>2006-12-16 17:25:00</td>
+      <td>2006-12-16 19:25:00+02:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>2006-12-16 17:26:00</td>
+      <td>2006-12-16 19:26:00+02:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>2006-12-16 17:27:00</td>
+      <td>2006-12-16 19:27:00+02:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>2006-12-16 17:28:00</td>
+      <td>2006-12-16 19:28:00+02:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="conversion-changing-time-zones">
+<h3>3.2 Conversion: Changing time zones<a class="headerlink" href="#conversion-changing-time-zones" title="Link to this heading"></a></h3>
+<p>What if we want to convert the timestamps to another time zone? The goal is to represent the same point in time using a different local time, without changing the underlying observation or event. We can use <code class="docutils literal notranslate"><span class="pre">tz_convert()</span></code> to convert a timezone-aware timestamp from one time zone to another while preserving the same point in time.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># convert same moments to California time</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Datetime_California"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Datetime_Stockholm"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="s2">"America/Los_Angeles"</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Datetime_Stockholm"</span><span class="p">,</span> <span class="s2">"Datetime_California"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Datetime</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>2006-12-16 17:24:00</td>
+      <td>2006-12-16 19:24:00+02:00</td>
+      <td>2006-12-16 09:24:00-08:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>2006-12-16 17:25:00</td>
+      <td>2006-12-16 19:25:00+02:00</td>
+      <td>2006-12-16 09:25:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>2006-12-16 17:26:00</td>
+      <td>2006-12-16 19:26:00+02:00</td>
+      <td>2006-12-16 09:26:00-08:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>2006-12-16 17:27:00</td>
+      <td>2006-12-16 19:27:00+02:00</td>
+      <td>2006-12-16 09:27:00-08:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>2006-12-16 17:28:00</td>
+      <td>2006-12-16 19:28:00+02:00</td>
+      <td>2006-12-16 09:28:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>After conversion, the clock time changed from 19:24 to 09:24, but the actual moment represented by the timestamp did not change.</p>
+<p>This gives us a clean, timezone-aware timestamp that is ready for the next stages of time-series preprocessing, such as selecting dates and times, extracting temporal features, calculating time differences, and creating lagged features.</p>
+<div class='alert alert-warning'>
+<div class="dropdown callout admonition" id="callout-0">
+<p class="admonition-title">Localization vs. Conversion</p>
+<ul>
+<li><p>Localization uses <code class="docutils literal notranslate"><span class="pre">tz_localize()</span></code>.</p>
+<ul class="simple">
+<li><p>When datetime is naive, the clock remains and the output of following code fragment is 17:24.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">naive</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-16 17:24:00"</span><span class="p">)</span>
+<span class="n">aware</span> <span class="o">=</span> <span class="n">naive</span><span class="o">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="s2">"Europe/Paris"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Conversion uses <code class="docutils literal notranslate"><span class="pre">tz_convert()</span></code>.</p>
+<ul class="simple">
+<li><p>When datetime is already timezone-aware, perform conversion to change the clock time in another timezone.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">converted</span> <span class="o">=</span> <span class="n">aware</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="s2">"UTC"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>A common mistake is trying to convert a naive datetime directly <code class="docutils literal notranslate"><span class="pre">df[&quot;Datetime&quot;].dt.tz_convert(&quot;UTC&quot;)</span></code>.</p>
+<ul class="simple">
+<li><p>This will fail because pandas does not yet know what timezone the naive timestamp represents.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div></section>
+</section>
+<section id="selecting-time-series-data">
+<h2>4. Selecting Time-Series Data<a class="headerlink" href="#selecting-time-series-data" title="Link to this heading"></a></h2>
+<p>Once the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a> has been converted into proper datetime values and, when needed, assigned a timezone, the next step is to select specific dates, times, and time periods efficiently.</p>
+<p>This dataset contains measurements recorded approximately every minute, producing a large number of observations over several years. But in a time-series dataset, we are rarely interested in every observation at once. We may want to examine electricity consumption on a particular day, during a specific month, or across a selected range of dates.</p>
+<p>In this section, we will use pandas date-based indexing and filtering to navigate this dataset. Before selecting dates, it is useful to make sure the data is sorted chronologically via <code class="docutils literal notranslate"><span class="pre">sort_values(&quot;Datetime&quot;)</span></code>. This is an important step when working with time-series data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Datetime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>2006-12-16 17:24:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>2006-12-16 17:25:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>2006-12-16 17:26:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>2006-12-16 17:27:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>2006-12-16 17:28:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="select-a-specific-date">
+<h3>4.1 Select a specific date<a class="headerlink" href="#select-a-specific-date" title="Link to this heading"></a></h3>
+<p>When we want to select a specific date, one straightforward approach is to <strong>filter dataframe using a condition</strong>. Suppose we want to examine electricity consumption on December 17, 2006. We can do so by running the code snippet below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_17_dec</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-17"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()]</span>
+<span class="n">df_17_dec</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+      <th>Datetime</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>396</th>
+      <td>2006-12-17</td>
+      <td>00:00:00</td>
+      <td>1.044</td>
+      <td>0.152</td>
+      <td>242.73</td>
+      <td>4.4</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 00:00:00</td>
+      <td>2006-12-17 02:00:00+02:00</td>
+      <td>2006-12-16 16:00:00-08:00</td>
+    </tr>
+    <tr>
+      <th>397</th>
+      <td>2006-12-17</td>
+      <td>00:01:00</td>
+      <td>1.520</td>
+      <td>0.220</td>
+      <td>242.20</td>
+      <td>7.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 00:01:00</td>
+      <td>2006-12-17 02:01:00+02:00</td>
+      <td>2006-12-16 16:01:00-08:00</td>
+    </tr>
+    <tr>
+      <th>398</th>
+      <td>2006-12-17</td>
+      <td>00:02:00</td>
+      <td>3.038</td>
+      <td>0.194</td>
+      <td>240.14</td>
+      <td>12.6</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 00:02:00</td>
+      <td>2006-12-17 02:02:00+02:00</td>
+      <td>2006-12-16 16:02:00-08:00</td>
+    </tr>
+    <tr>
+      <th>399</th>
+      <td>2006-12-17</td>
+      <td>00:03:00</td>
+      <td>2.974</td>
+      <td>0.194</td>
+      <td>239.97</td>
+      <td>12.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 00:03:00</td>
+      <td>2006-12-17 02:03:00+02:00</td>
+      <td>2006-12-16 16:03:00-08:00</td>
+    </tr>
+    <tr>
+      <th>400</th>
+      <td>2006-12-17</td>
+      <td>00:04:00</td>
+      <td>2.846</td>
+      <td>0.198</td>
+      <td>240.39</td>
+      <td>11.8</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 00:04:00</td>
+      <td>2006-12-17 02:04:00+02:00</td>
+      <td>2006-12-16 16:04:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>We can check how many observations we retrieved via <code class="docutils literal notranslate"><span class="pre">len(df_17_dec)</span></code>. As this dataset contains one measurement per minute, a complete day should contain close to 24 × 60 = 1,440 observations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">df_17_dec</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1440
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we are filtering rows based on the value of a datetime column. It works, but pandas provides an even more convenient approach when we use <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>, which tells pandas that the index of the dataframe consists of timestamps. Here we set our <code class="docutils literal notranslate"><span class="pre">Datetime</span></code> column as the index <code class="docutils literal notranslate"><span class="pre">df_index</span> <span class="pre">=</span> <span class="pre">df.set_index(&quot;Datetime&quot;)</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span>
+<span class="n">df_index</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+    <tr>
+      <th>Datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2006-12-16 17:24:00</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>4.216</td>
+      <td>0.418</td>
+      <td>234.84</td>
+      <td>18.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:24:00+02:00</td>
+      <td>2006-12-16 09:24:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:25:00</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>5.360</td>
+      <td>0.436</td>
+      <td>233.63</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>16.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:25:00+02:00</td>
+      <td>2006-12-16 09:25:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:26:00</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>5.374</td>
+      <td>0.498</td>
+      <td>233.29</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:26:00+02:00</td>
+      <td>2006-12-16 09:26:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:27:00</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>5.388</td>
+      <td>0.502</td>
+      <td>233.74</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:27:00+02:00</td>
+      <td>2006-12-16 09:27:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:28:00</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>3.666</td>
+      <td>0.528</td>
+      <td>235.68</td>
+      <td>15.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:28:00+02:00</td>
+      <td>2006-12-16 09:28:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Once <code class="docutils literal notranslate"><span class="pre">Datetime</span></code> is the index, selecting an entire day becomes much simpler. For example, <code class="docutils literal notranslate"><span class="pre">df_index.loc[&quot;2006-12-17&quot;]</span></code> tells pandas to give “all observations belonging to December 17 2006”. This is considerably more convenient than manually constructing a filtering condition.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"2006-12-17"</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+    <tr>
+      <th>Datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2006-12-17 00:00:00</th>
+      <td>2006-12-17</td>
+      <td>00:00:00</td>
+      <td>1.044</td>
+      <td>0.152</td>
+      <td>242.73</td>
+      <td>4.4</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 02:00:00+02:00</td>
+      <td>2006-12-16 16:00:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 00:01:00</th>
+      <td>2006-12-17</td>
+      <td>00:01:00</td>
+      <td>1.520</td>
+      <td>0.220</td>
+      <td>242.20</td>
+      <td>7.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 02:01:00+02:00</td>
+      <td>2006-12-16 16:01:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 00:02:00</th>
+      <td>2006-12-17</td>
+      <td>00:02:00</td>
+      <td>3.038</td>
+      <td>0.194</td>
+      <td>240.14</td>
+      <td>12.6</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 02:02:00+02:00</td>
+      <td>2006-12-16 16:02:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 00:03:00</th>
+      <td>2006-12-17</td>
+      <td>00:03:00</td>
+      <td>2.974</td>
+      <td>0.194</td>
+      <td>239.97</td>
+      <td>12.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 02:03:00+02:00</td>
+      <td>2006-12-16 16:03:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 00:04:00</th>
+      <td>2006-12-17</td>
+      <td>00:04:00</td>
+      <td>2.846</td>
+      <td>0.198</td>
+      <td>240.39</td>
+      <td>11.8</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 02:04:00+02:00</td>
+      <td>2006-12-16 16:04:00-08:00</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 23:55:00</th>
+      <td>2006-12-17</td>
+      <td>23:55:00</td>
+      <td>0.276</td>
+      <td>0.122</td>
+      <td>245.63</td>
+      <td>1.2</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-18 01:55:00+02:00</td>
+      <td>2006-12-17 15:55:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 23:56:00</th>
+      <td>2006-12-17</td>
+      <td>23:56:00</td>
+      <td>0.274</td>
+      <td>0.118</td>
+      <td>244.57</td>
+      <td>1.2</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-18 01:56:00+02:00</td>
+      <td>2006-12-17 15:56:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 23:57:00</th>
+      <td>2006-12-17</td>
+      <td>23:57:00</td>
+      <td>0.274</td>
+      <td>0.116</td>
+      <td>244.19</td>
+      <td>1.2</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-18 01:57:00+02:00</td>
+      <td>2006-12-17 15:57:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 23:58:00</th>
+      <td>2006-12-17</td>
+      <td>23:58:00</td>
+      <td>0.274</td>
+      <td>0.120</td>
+      <td>244.82</td>
+      <td>1.2</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-18 01:58:00+02:00</td>
+      <td>2006-12-17 15:58:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 23:59:00</th>
+      <td>2006-12-17</td>
+      <td>23:59:00</td>
+      <td>0.276</td>
+      <td>0.120</td>
+      <td>244.89</td>
+      <td>1.2</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-18 01:59:00+02:00</td>
+      <td>2006-12-17 15:59:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+<p>1440 rows × 14 columns</p>
+</div></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code> also allows us to select an entire week/month/year using a partial date string.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># one entire month of data</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"2007-01"</span><span class="p">]),</span> <span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">,</span> <span class="mi">31</span><span class="o">*</span><span class="mi">1440</span><span class="p">)</span>
+<span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"2007-01"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="c1"># one entire year of data</span>
+<span class="c1"># print(len(df_index.loc["2007"]), '\t', 365*1440)</span>
+<span class="c1"># df_index.loc["2007"].head()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>44640 	 44640
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+    <tr>
+      <th>Datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2007-01-01 00:00:00</th>
+      <td>2007-01-01</td>
+      <td>00:00:00</td>
+      <td>2.580</td>
+      <td>0.136</td>
+      <td>241.97</td>
+      <td>10.6</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2007-01-01 02:00:00+02:00</td>
+      <td>2006-12-31 16:00:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2007-01-01 00:01:00</th>
+      <td>2007-01-01</td>
+      <td>00:01:00</td>
+      <td>2.552</td>
+      <td>0.100</td>
+      <td>241.75</td>
+      <td>10.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2007-01-01 02:01:00+02:00</td>
+      <td>2006-12-31 16:01:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2007-01-01 00:02:00</th>
+      <td>2007-01-01</td>
+      <td>00:02:00</td>
+      <td>2.550</td>
+      <td>0.100</td>
+      <td>241.64</td>
+      <td>10.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2007-01-01 02:02:00+02:00</td>
+      <td>2006-12-31 16:02:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2007-01-01 00:03:00</th>
+      <td>2007-01-01</td>
+      <td>00:03:00</td>
+      <td>2.550</td>
+      <td>0.100</td>
+      <td>241.71</td>
+      <td>10.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2007-01-01 02:03:00+02:00</td>
+      <td>2006-12-31 16:03:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2007-01-01 00:04:00</th>
+      <td>2007-01-01</td>
+      <td>00:04:00</td>
+      <td>2.554</td>
+      <td>0.100</td>
+      <td>241.98</td>
+      <td>10.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2007-01-01 02:04:00+02:00</td>
+      <td>2006-12-31 16:04:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="select-a-specific-period">
+<h3>4.2 Select a specific period<a class="headerlink" href="#select-a-specific-period" title="Link to this heading"></a></h3>
+<p>Furthermore, we can also select a period rather than a single date, month, or a single year. This is particularly useful for exploring a short section of a much larger time series.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_period</span> <span class="o">=</span> <span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"2006-12-17"</span><span class="p">:</span><span class="s2">"2006-12-18"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_period</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2880
+</pre></div>
+</div>
+</div>
+</div>
+<p>Sometimes we need more precise control than selecting complete days. For example, suppose we want electricity consumption between December 16 2006, 17:30 and 18:00. This gives us observations within that specific time interval. We could then calculate the average power consumption during this period.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_half_hour</span> <span class="o">=</span> <span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"2006-12-16 17:30:00"</span><span class="p">:</span><span class="s2">"2006-12-16 18:00:00"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_half_hour</span><span class="p">))</span>
+
+<span class="n">df_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="s2">"2006-12-16 17:30:00"</span><span class="p">:</span><span class="s2">"2006-12-16 18:00:00"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span>
+<span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>31
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(4.106129032258064)
+</pre></div>
+</div>
+</div>
+</div>
+<p>This demonstrates why timestamps are much more powerful than ordinary strings: <strong>pandas can understand the chronological relationship between them</strong>.</p>
+<p>We can also use normal Boolean filtering. For example, suppose we want observations from December 2006 where global active power was greater than 7 kW. This combines two concepts: <strong>Time-based filtering</strong> and <strong>Value-based filtering</strong>. This type of filtering becomes very useful when preparing data for machine-learning analysis.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">high_power</span> <span class="o">=</span> <span class="n">df_index</span><span class="p">[</span>
+    <span class="p">(</span><span class="n">df_index</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="s2">"2006-12-01"</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">df_index</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="s2">"2007-01-01"</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">df_index</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">high_power</span><span class="p">))</span>
+<span class="n">high_power</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>80
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>Day</th>
+      <th>Datetime_Stockholm</th>
+      <th>Datetime_California</th>
+    </tr>
+    <tr>
+      <th>Datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2006-12-16 17:45:00</th>
+      <td>2006-12-16</td>
+      <td>17:45:00</td>
+      <td>7.706</td>
+      <td>0.000</td>
+      <td>230.98</td>
+      <td>33.2</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:45:00+02:00</td>
+      <td>2006-12-16 09:45:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:46:00</th>
+      <td>2006-12-16</td>
+      <td>17:46:00</td>
+      <td>7.026</td>
+      <td>0.000</td>
+      <td>232.21</td>
+      <td>30.6</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>16.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>16</td>
+      <td>2006-12-16 19:46:00+02:00</td>
+      <td>2006-12-16 09:46:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-17 09:03:00</th>
+      <td>2006-12-17</td>
+      <td>09:03:00</td>
+      <td>7.064</td>
+      <td>0.124</td>
+      <td>235.57</td>
+      <td>30.0</td>
+      <td>0.0</td>
+      <td>37.0</td>
+      <td>0.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>17</td>
+      <td>2006-12-17 11:03:00+02:00</td>
+      <td>2006-12-17 01:03:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-19 08:47:00</th>
+      <td>2006-12-19</td>
+      <td>08:47:00</td>
+      <td>7.828</td>
+      <td>0.182</td>
+      <td>232.20</td>
+      <td>33.6</td>
+      <td>36.0</td>
+      <td>72.0</td>
+      <td>17.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>19</td>
+      <td>2006-12-19 10:47:00+02:00</td>
+      <td>2006-12-19 00:47:00-08:00</td>
+    </tr>
+    <tr>
+      <th>2006-12-19 08:48:00</th>
+      <td>2006-12-19</td>
+      <td>08:48:00</td>
+      <td>7.840</td>
+      <td>0.188</td>
+      <td>232.55</td>
+      <td>33.6</td>
+      <td>36.0</td>
+      <td>71.0</td>
+      <td>16.0</td>
+      <td>2006</td>
+      <td>12</td>
+      <td>19</td>
+      <td>2006-12-19 10:48:00+02:00</td>
+      <td>2006-12-19 00:48:00-08:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>For the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, selecting data for a specific date or period is more important than treating millions of observations as a single, undifferentiated table. We can ask much more meaningful questions such as “What happened on this day?”, “What happened during December?”, or “How much electricity was consumed during the evening?” This provides the foundation for the next step: breaking datetime information into multiple features such as year, month, day, hour, and weekday.</p>
+</section>
+</section>
+<section id="calculating-differences-and-elapsed-time-in-time-series-data">
+<h2>5. Calculating Differences and Elapsed Time in Time-Series Data<a class="headerlink" href="#calculating-differences-and-elapsed-time-in-time-series-data" title="Link to this heading"></a></h2>
+<p>Once we have converted timestamps into proper datetime values and extracted useful calendar features, we can ask another important question: how much time has passed between observations or events? In time-series data, the difference between two timestamps can provide valuable information about the frequency of observations, the duration of an event, or the time since a previous measurement.</p>
+<p>Let’s continue with the the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a> from the previous sections. We first check that we already have a <code class="docutils literal notranslate"><span class="pre">Datetime</span></code> column and that the data is sorted chronologically.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>One of the useful properties of pandas <code class="docutils literal notranslate"><span class="pre">datetime</span></code> objects is that we can simply subtract them.
+For example, let’s select two timestamps, and the output is a pandas <strong>Timedelta</strong>, which represents a duration or difference between two points in time.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-16 17:24:00"</span><span class="p">)</span>
+<span class="n">time2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-16 17:30:00"</span><span class="p">)</span>
+
+<span class="n">difference</span> <span class="o">=</span> <span class="n">time2</span> <span class="o">-</span> <span class="n">time1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 days 00:06:00
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can also extracting the number of days, and also the duration in other units, such as the numbers of seconds.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-16"</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2006-12-20"</span><span class="p">)</span>
+
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">elapsed</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">elapsed</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4 days 00:00:00
+4
+345600.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class='alert alert-danger'>
+<div class="dropdown questions admonition" id="questions-0">
+<p class="admonition-title">Why can time differences help data analysis and machine learning?</p>
+<ul class="simple">
+<li><p>Time differences can be useful features when the spacing between observations is meaningful.</p></li>
+<li><p>For example, imagine two electricity measurements: “Measurement A → 4.2 kW” and “Measurement B → 5.1 kW”.</p></li>
+<li><p>The model may benefit from knowing not only the values but also how long passed between A and B?</p></li>
+<li><p>In regularly sampled data such as this electricity dataset, the answer is usually about one minute.</p></li>
+<li><p>But in event-based datasets – such as customer purchases, website visits, or medical events – the elapsed time can vary considerably.</p></li>
+</ul>
+</div>
+</div></section>
+<section id="creating-lagged-features-using-the-past-to-predict-the-future">
+<h2>6. Creating Lagged Features: Using the Past to Predict the Future<a class="headerlink" href="#creating-lagged-features-using-the-past-to-predict-the-future" title="Link to this heading"></a></h2>
+<p>In time-series data analysis and machine learning tasks, the most useful information for predicting what happens next is often found in what happened previously. A <strong>lagged feature</strong> stores an earlier observation alongside the current observation, allowing a model to learn relationships between past and future values. For the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, for example, the electricity consumption one minute ago may contain useful information for predicting consumption at the current minute or at a future time.</p>
+<p>In this section, we will explore what a lag is, and then create electricity-consumption lagged features using pandas, see how lagged features support forecasting. We continue with the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, and always start to chronologically sort observations, and thus these observations have a temporal order.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="creating-a-one-step-lag">
+<h3>6.1 Creating a one-step lag<a class="headerlink" href="#creating-a-one-step-lag" title="Link to this heading"></a></h3>
+<p>Suppose the electricity consumption is</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Time        Power</span>
+<span class="go">17:24       4.216</span>
+<span class="go">17:25       5.360</span>
+<span class="go">17:26       5.374</span>
+<span class="go">17:27       5.388</span>
+</pre></div>
+</div>
+<p>, and a one-step lag looks like this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Current Time     Current Power     Previous Power</span>
+<span class="go">17:24             4.216              NaN</span>
+<span class="go">17:25             5.360             4.216</span>
+<span class="go">17:26             5.374             5.360</span>
+<span class="go">17:27             5.388             5.374</span>
+</pre></div>
+</div>
+<p>So when we are at 17:26, the lagged feature tells us what the power consumption was at 17:25.</p>
+<p>We can use <code class="docutils literal notranslate"><span class="pre">.shift()</span></code> in pandas. In below code snippet, the <code class="docutils literal notranslate"><span class="pre">.shift(1)</span></code> means to move the values down by one row so that the previous observation becomes a feature for the current observation. We can see that the first row contains <code class="docutils literal notranslate"><span class="pre">NaN</span></code> because there is no previous observation available.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Power_Lag_1"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">,</span> <span class="s2">"Power_Lag_1"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Power_Lag_1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>4.216</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>5.388</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>If one previous observation is not enough, we can create several lagged features.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Power_Lag_2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Power_Lag_3"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Power_Lag_1"</span><span class="p">,</span> <span class="s2">"Power_Lag_2"</span><span class="p">,</span> <span class="s2">"Power_Lag_3"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Power_Lag_1</th>
+      <th>Power_Lag_2</th>
+      <th>Power_Lag_3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>4.216</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>5.360</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>5.374</td>
+      <td>5.360</td>
+      <td>4.216</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>5.388</td>
+      <td>5.374</td>
+      <td>5.360</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class='alert alert-danger'>
+<div class="dropdown questions admonition" id="questions-1">
+<p class="admonition-title">Why are lagged features useful?</p>
+<ul>
+<li><p>Electricity consumption often has temporal dependence. In other words, what happens now may be related to what happened recently. For example, if household electricity consumption is currently high, the consumption one minute ago may also have been high.</p></li>
+<li><p>A model can potentially learn relationships such as:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    Power at t-1  → Power at t</span>
+<span class="go">    Power at t-2  → Power at t</span>
+<span class="go">    Power at t-3  → Power at t</span>
+</pre></div>
+</div>
+<p>where:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">    t     = current time</span>
+<span class="go">    t-1   = one observation ago</span>
+<span class="go">    t-2   = two observations ago</span>
+<span class="go">    t-3   = three observations ago</span>
+</pre></div>
+</div>
+</li>
+<li><p>This is one of the fundamental ideas behind many time-series forecasting approaches.</p></li>
+</ul>
+</div>
+</div></section>
+<section id="connect-lagged-features-for-forecasting">
+<h3>6.2 Connect lagged features for forecasting<a class="headerlink" href="#connect-lagged-features-for-forecasting" title="Link to this heading"></a></h3>
+<p>Now let’s connect lagged features for forecasting. Suppose our goal is to predict electricity consumption at the next minute, we can define the future value as our target. One simple approach is to <strong>shift target backward</strong> <code class="docutils literal notranslate"><span class="pre">df[&quot;Target_Next_Minute&quot;]</span> <span class="pre">=</span> <span class="pre">(df[&quot;Global_active_power&quot;].shift(-1))</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Target"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Target"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>5.388</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>3.666</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>3.520</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>This means that we can use information available at time <code class="docutils literal notranslate"><span class="pre">t</span></code> to predict electricity consumption at time <code class="docutils literal notranslate"><span class="pre">t+1</span></code>. We could even use information at <code class="docutils literal notranslate"><span class="pre">t-1</span></code>, <code class="docutils literal notranslate"><span class="pre">t-2</span></code>, and <code class="docutils literal notranslate"><span class="pre">t-3</span></code> as predictors. The basic forecasting structure becomes:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Past</span>
+<span class="go"> ↓</span>
+<span class="go">t-3     t-2     t-1       t       t+1</span>
+<span class="go"> |       |       |         |        |</span>
+<span class="go"> └───────┴───────┴─────────┘        ↓</span>
+<span class="go">     Features                  Prediction</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-simple-forecasting-dataset">
+<h3>6.3 Building a simple forecasting dataset<a class="headerlink" href="#building-a-simple-forecasting-dataset" title="Link to this heading"></a></h3>
+<p>Let’s building a simple forecasting dataset by combining these lagged features and the target together.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">model_df</span><span class="p">[</span><span class="s2">"Lag_3"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">model_df</span><span class="p">[</span><span class="s2">"Lag_2"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">model_df</span><span class="p">[</span><span class="s2">"Lag_1"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">model_df</span><span class="p">[</span><span class="s2">"Target"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">model_df</span> <span class="o">=</span> <span class="n">model_df</span><span class="p">[</span>
+    <span class="p">[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Lag_3"</span><span class="p">,</span> <span class="s2">"Lag_2"</span><span class="p">,</span> <span class="s2">"Lag_1"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span><span class="p">,</span> <span class="s2">"Target"</span><span class="p">,]</span>
+<span class="p">]</span>
+
+<span class="n">model_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Lag_3</th>
+      <th>Lag_2</th>
+      <th>Lag_1</th>
+      <th>Global_active_power</th>
+      <th>Target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.216</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.216</td>
+      <td>5.360</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>NaN</td>
+      <td>4.216</td>
+      <td>5.360</td>
+      <td>5.374</td>
+      <td>5.388</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>4.216</td>
+      <td>5.360</td>
+      <td>5.374</td>
+      <td>5.388</td>
+      <td>3.666</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>5.360</td>
+      <td>5.374</td>
+      <td>5.388</td>
+      <td>3.666</td>
+      <td>3.520</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># for a simple demonstration, we remove rows with missing lag values</span>
+<span class="n">model_df</span> <span class="o">=</span> <span class="n">model_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">model_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Lag_3</th>
+      <th>Lag_2</th>
+      <th>Lag_1</th>
+      <th>Global_active_power</th>
+      <th>Target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>4.216</td>
+      <td>5.360</td>
+      <td>5.374</td>
+      <td>5.388</td>
+      <td>3.666</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>5.360</td>
+      <td>5.374</td>
+      <td>5.388</td>
+      <td>3.666</td>
+      <td>3.520</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2006-12-16 17:29:00</td>
+      <td>5.374</td>
+      <td>5.388</td>
+      <td>3.666</td>
+      <td>3.520</td>
+      <td>3.702</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2006-12-16 17:30:00</td>
+      <td>5.388</td>
+      <td>3.666</td>
+      <td>3.520</td>
+      <td>3.702</td>
+      <td>3.700</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2006-12-16 17:31:00</td>
+      <td>3.666</td>
+      <td>3.520</td>
+      <td>3.702</td>
+      <td>3.700</td>
+      <td>3.668</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class='alert alert-warning'>
+<div class="dropdown callout admonition" id="callout-1">
+<p class="admonition-title">Data leakage issues in time-series machine learning</p>
+<p><strong>Data leakage</strong> is one of the most important concepts in time-series machine learning. It occurs when information that would not actually be available at the time of prediction is inadvertently used to train or evaluate a model. Leakage can lead to overly optimistic performance estimates because the model has access to information that would not be available in a real-world forecasting scenario.</p>
+<p>For example, suppose we want to predict household electricity consumption at 17:30. At that moment, we may have access to the observations recorded at 17:27, 17:28, and 17:29, which can be used as lagged features to predict the power consumption at 17:30. However, <strong>we cannot use the actual power consumption at 17:31 as a feature, because this observation belongs to the future and would not yet be available</strong>. Including such information would introduce data leakage and make the model’s performance appear better than it would be in practice.</p>
+<p>There is another form of leakage that is especially important in time-series problems: <strong>temporal leakage caused by an inappropriate train-test split</strong>. Suppose we randomly split the observations into train and test sets: <code class="docutils literal notranslate"><span class="pre">train,</span> <span class="pre">test</span> <span class="pre">=</span> <span class="pre">train_test_split(model_df,</span> <span class="pre">test_size=0.2,random_state=42)</span></code>. This approach can be problematic for time-series forecasting because observations from the future may end up in the training set, while earlier observations are placed in the test set. Consequently, the model may learn from information that would not have been available when making predictions for the test period. This can result in overly optimistic evaluation metrics.</p>
+<p>For time-series forecasting, we normally preserve chronological order when splitting the data. A representative code example is shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">split_date</span> <span class="o">=</span> <span class="s2">"2010-01-01"</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">model_df</span><span class="p">[</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">split_date</span><span class="p">]</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">model_df</span><span class="p">[</span><span class="n">model_df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">split_date</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, the model is trained on observations before January 1, 2010, and evaluated on observations from that date onward. This better reflects the real-world forecasting scenario, where future observations are not available when making predictions.</p>
+</div>
+</div></section>
+</section>
+<section id="using-rolling-time-windows">
+<h2>7. Using Rolling Time Windows<a class="headerlink" href="#using-rolling-time-windows" title="Link to this heading"></a></h2>
+<p>Lagged features allow us to look at individual previous observations, but sometimes a single past value is too noisy to provide a reliable picture of recent behavior. <strong>Rolling time windows</strong> solve this problem by summarizing a group of recent observations, for example, calculating the average electricity consumption over the previous 5, 30, or 60 minutes.</p>
+<p>In this section, we will calculate rolling mean, sum, minimum, and maximum values, check these statistics with smooth short-term fluctuations, and reveal local trends in household electricity usage in the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Datetime"</span><span class="p">,</span> <span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="creating-a-rolling-window">
+<h3>7.1 Creating a rolling window<a class="headerlink" href="#creating-a-rolling-window" title="Link to this heading"></a></h3>
+<p>A rolling window takes a group of consecutive observations and calculates a statistic over that group, that is, it summarizes recent history rather than looking at only one previous observation.</p>
+<p>Suppose our electricity consumption is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Time</span>       <span class="n">Power</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">24</span>      <span class="mf">4.216</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">25</span>      <span class="mf">5.360</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">26</span>      <span class="mf">5.374</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">27</span>      <span class="mf">5.388</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">28</span>      <span class="mf">5.400</span>
+</pre></div>
+</div>
+<p>A 3-observation rolling mean might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Time</span>       <span class="n">Power</span>       <span class="n">Rolling</span> <span class="n">Mean</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">24</span>      <span class="mf">4.216</span>          <span class="n">NaN</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">25</span>      <span class="mf">5.360</span>          <span class="n">NaN</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">26</span>      <span class="mf">5.374</span>         <span class="mf">4.983</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">27</span>      <span class="mf">5.388</span>         <span class="mf">5.374</span>
+<span class="mi">17</span><span class="p">:</span><span class="mi">28</span>      <span class="mf">5.400</span>         <span class="mf">5.387</span>
+</pre></div>
+</div>
+<p>At 17:26, the rolling window contains <code class="docutils literal notranslate"><span class="pre">17:24,</span> <span class="pre">17:25,</span> <span class="pre">17:26</span></code>, and pandas calculates the average of those observations, (4.216+5.360+5.374)/3 = 4.983.</p>
+<p>For the rolling window, the most common rolling statistic is the <strong>rolling mean</strong>. Let’s calculate a 5-observation rolling average.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Rolling_Mean_5"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">df</span><span class="p">[[</span>
+    <span class="s2">"Datetime"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Rolling_Mean_5"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Rolling_Mean_5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>4.8008</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2006-12-16 17:29:00</td>
+      <td>3.520</td>
+      <td>4.6616</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2006-12-16 17:30:00</td>
+      <td>3.702</td>
+      <td>4.3300</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The first four rows will contain <code class="docutils literal notranslate"><span class="pre">NaN</span></code> because five observations are required to calculate the first complete 5-observation window.</p>
+<p>Because this dataset is approximately minute-level data, a 30-observation window represents approximately 30 minutes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Rolling_Mean_30"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">df</span><span class="p">[[</span>
+    <span class="s2">"Datetime"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Rolling_Mean_30"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Rolling_Mean_30</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2006-12-16 17:29:00</td>
+      <td>3.520</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2006-12-16 17:30:00</td>
+      <td>3.702</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2006-12-16 17:31:00</td>
+      <td>3.700</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2006-12-16 17:32:00</td>
+      <td>3.668</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2006-12-16 17:33:00</td>
+      <td>3.662</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2006-12-16 17:34:00</td>
+      <td>4.448</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2006-12-16 17:35:00</td>
+      <td>5.412</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2006-12-16 17:36:00</td>
+      <td>5.224</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2006-12-16 17:37:00</td>
+      <td>5.268</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2006-12-16 17:38:00</td>
+      <td>4.054</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2006-12-16 17:39:00</td>
+      <td>3.384</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2006-12-16 17:40:00</td>
+      <td>3.270</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2006-12-16 17:41:00</td>
+      <td>3.430</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2006-12-16 17:42:00</td>
+      <td>3.266</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>2006-12-16 17:43:00</td>
+      <td>3.728</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>2006-12-16 17:44:00</td>
+      <td>5.894</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>2006-12-16 17:45:00</td>
+      <td>7.706</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>2006-12-16 17:46:00</td>
+      <td>7.026</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>2006-12-16 17:47:00</td>
+      <td>5.174</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>2006-12-16 17:48:00</td>
+      <td>4.474</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>2006-12-16 17:49:00</td>
+      <td>3.248</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2006-12-16 17:50:00</td>
+      <td>3.236</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>2006-12-16 17:51:00</td>
+      <td>3.228</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>2006-12-16 17:52:00</td>
+      <td>3.258</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>2006-12-16 17:53:00</td>
+      <td>3.178</td>
+      <td>4.338733</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>2006-12-16 17:54:00</td>
+      <td>2.720</td>
+      <td>4.288867</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>2006-12-16 17:55:00</td>
+      <td>3.758</td>
+      <td>4.235467</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>2006-12-16 17:56:00</td>
+      <td>4.342</td>
+      <td>4.201067</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>2006-12-16 17:57:00</td>
+      <td>4.512</td>
+      <td>4.171867</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>2006-12-16 17:58:00</td>
+      <td>4.058</td>
+      <td>4.184933</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>2006-12-16 17:59:00</td>
+      <td>2.472</td>
+      <td>4.150000</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>2006-12-16 18:00:00</td>
+      <td>2.790</td>
+      <td>4.119600</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>2006-12-16 18:01:00</td>
+      <td>2.624</td>
+      <td>4.083733</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>2006-12-16 18:02:00</td>
+      <td>2.772</td>
+      <td>4.053867</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>2006-12-16 18:03:00</td>
+      <td>3.740</td>
+      <td>4.056467</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Compared with the original measurement, we can see that instant measurement may fluctuate considerably from minute to minute, while the rolling mean will generally be smoother.</p>
+<p>We can extend the rolling window to approximately one hour. Different window lengths provide different levels of temporal context. In general, <strong>a longer rolling window produces smoother output by reducing influence of short-term fluctuations</strong>, while <strong>a shorter window is more responsive to rapid changes in dataset</strong>.</p>
+<div class='alert alert-warning'>
+<div class="admonition-the-window-size-matter callout admonition" id="callout-2">
+<p class="admonition-title">The window size matter!</p>
+<p>The size of the rolling window determines how much recent history we summarize.</p>
+<ul class="simple">
+<li><p>A rolling window with 5 observations captures very short-term behavior.</p></li>
+<li><p>A rolling window with 60 observations captures approximately one hour of history in this dataset.</p></li>
+<li><p>Conceptually:</p>
+<ul>
+<li><p>Small window -&gt; More responsive -&gt; More sensitive to noise</p></li>
+<li><p>Large window -&gt; More smoothing -&gt; Less sensitive to short-term changes</p></li>
+<li><p><strong>This is an important modeling decision</strong>.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div></section>
+<section id="rolling-sum-minimum-maximum">
+<h3>7.2 Rolling sum, minimum &amp; maximum<a class="headerlink" href="#rolling-sum-minimum-maximum" title="Link to this heading"></a></h3>
+<p>A rolling window does not have to calculate an average. We can calculate the rolling sum.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Rolling_Sum_60"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span>
+    <span class="s2">"Datetime"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Rolling_Sum_60"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Rolling_Sum_60</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>65</th>
+      <td>2006-12-16 18:29:00</td>
+      <td>2.920</td>
+      <td>242.844</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>2006-12-16 18:30:00</td>
+      <td>2.930</td>
+      <td>242.072</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>2006-12-16 18:31:00</td>
+      <td>2.912</td>
+      <td>241.284</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>2006-12-16 18:32:00</td>
+      <td>2.608</td>
+      <td>240.224</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>2006-12-16 18:33:00</td>
+      <td>2.714</td>
+      <td>239.276</td>
+    </tr>
+  </tbody>
+</table>
+<p>70 rows × 3 columns</p>
+</div></div></div>
+</div>
+<p>This calculates the sum of the previous 60 observations, including the current observation. If each observation represents approximately one minute, this summarizes approximately one hour of measurements.</p>
+<p>We can also calculate the minimum/maximum value in a rolling window. This answers “What was the lowest/highest measured power consumption within the recent 60 observations”? Rolling minimum/maximum can be useful when we want to understand the lower/upper boundary of recent activity.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">"Rolling_Min_60"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="c1"># .max()</span>
+<span class="p">)</span>
+<span class="n">df</span><span class="p">[[</span>
+    <span class="s2">"Datetime"</span><span class="p">,</span>
+    <span class="s2">"Global_active_power"</span><span class="p">,</span>
+    <span class="s2">"Rolling_Min_60"</span>
+<span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">65</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Datetime</th>
+      <th>Global_active_power</th>
+      <th>Rolling_Min_60</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16 17:24:00</td>
+      <td>4.216</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16 17:25:00</td>
+      <td>5.360</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16 17:26:00</td>
+      <td>5.374</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16 17:27:00</td>
+      <td>5.388</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16 17:28:00</td>
+      <td>3.666</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>60</th>
+      <td>2006-12-16 18:24:00</td>
+      <td>3.452</td>
+      <td>2.308</td>
+    </tr>
+    <tr>
+      <th>61</th>
+      <td>2006-12-16 18:25:00</td>
+      <td>4.870</td>
+      <td>2.308</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>2006-12-16 18:26:00</td>
+      <td>4.868</td>
+      <td>2.308</td>
+    </tr>
+    <tr>
+      <th>63</th>
+      <td>2006-12-16 18:27:00</td>
+      <td>4.866</td>
+      <td>2.308</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>2006-12-16 18:28:00</td>
+      <td>3.176</td>
+      <td>2.308</td>
+    </tr>
+  </tbody>
+</table>
+<p>65 rows × 3 columns</p>
+</div></div></div>
+</div>
+<div class='alert alert-warning'>
+<div class="dropdown callout admonition" id="callout-3">
+<p class="admonition-title">Lagged featrues vs. rolling windows</p>
+<p>Lagged features and rolling windows both use information from the past, but in different ways.</p>
+<ul class="simple">
+<li><p><strong>Lagged features</strong> keep specific previous values, such as previou step or the value from three steps ago, so the model can learn <strong>how individual past observations relate to current or future value</strong>.</p></li>
+<li><p>A <strong>rolling window</strong> combines several recent observations and calculates a summary, such as the mean, minimum, or maximum, to capture the <strong>recent trend or overall behavior</strong>.</p></li>
+<li><p>In simple terms, <strong>lagged features remember specific past values</strong>, while <strong>rolling windows summarize recent history</strong>.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+<section id="handling-missing-data-in-time-series">
+<h2>8. Handling Missing Data in Time Series<a class="headerlink" href="#handling-missing-data-in-time-series" title="Link to this heading"></a></h2>
+<p>Talking about missing data in time-series analysis, there are two different kinds of missingness we need to distinguish: <strong>a missing value</strong> and <strong>a missing timestamp</strong>. In the the <a class="reference external" href="https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption">UCI Individual Household Electric Power Consumption dataset</a>, for example, a household’s electricity measurement may be unavailable for a particular minute, or an entire period of timestamps may be absent from the dataset. These situations require different solutions.</p>
+<p>In this section, we will first identify missing values and missing timestamps, and then impute missing values using methods such as forward fill, backward fill, and interpolation. A key consideration when applying these methods is to avoid creating unrealistic patterns or introducing future information into a forecasting model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://raw.githubusercontent.com/jbrownlee/Datasets/master/household_power_consumption.zip"</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">";"</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="s2">"?"</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%d</span><span class="s2">/%m/%Y"</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"Date"</span><span class="p">]</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"Time"</span><span class="p">])</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">"Date"</span><span class="p">,</span> <span class="s2">"Time"</span><span class="p">,</span> <span class="s2">"Datetime"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Datetime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>2006-12-16 17:24:00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>2006-12-16 17:25:00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>2006-12-16 17:26:00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>2006-12-16 17:27:00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>2006-12-16 17:28:00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="missing-values-vs-missing-timestamps">
+<h3>8.1 Missing values vs. missing timestamps<a class="headerlink" href="#missing-values-vs-missing-timestamps" title="Link to this heading"></a></h3>
+<p><strong>What is a missing value and what is a missing timestamp?</strong> Suppose we have a toy dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">Time</span>       <span class="n">Power</span>
+    <span class="mi">10</span><span class="p">:</span><span class="mi">30</span>      <span class="mf">2.4</span>
+    <span class="mi">10</span><span class="p">:</span><span class="mi">31</span>      <span class="n">NaN</span>
+
+    <span class="mi">10</span><span class="p">:</span><span class="mi">33</span>      <span class="mf">2.8</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Here, the timestamp 10:31 exists, but the measurement is missing. This is a missing value.</p></li>
+<li><p>However, the timestamp 10:32 is completely absent. This is a missing timestamp.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># check how many missing values exist in electricity dataset</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Dataset shape:"</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># check missing values across all columns</span>
+<span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dataset shape: (2075259, 10)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Date                         0
+Time                         0
+Global_active_power      25979
+Global_reactive_power    25979
+Voltage                  25979
+Global_intensity         25979
+Sub_metering_1           25979
+Sub_metering_2           25979
+Sub_metering_3           25979
+Datetime                     0
+dtype: int64
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># look at missing observations</span>
+<span class="n">missing_power</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+<span class="n">missing_power</span><span class="p">[[</span><span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Global_active_power</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>6839</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6840</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19724</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19725</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>41832</th>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>From these results, we can figure it out that there are missing values in dataset, but there is no missing timestamps. This dataset contains measurements at a one-minute sampling rate, and all calendar timestamps are present.</p>
+</section>
+<section id="filling-missing-values">
+<h3>8.2 Filling missing values<a class="headerlink" href="#filling-missing-values" title="Link to this heading"></a></h3>
+<p>For time-series data, one of the simplest ways to fill missing values is <strong>forward fill</strong>.
+Forward fill means using the most recent available observation (<strong>previous value</strong>) to fill the missing value.</p>
+<p>Suppose the following observations are recorded:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">10:30 → 2.4</span>
+<span class="go">10:31 → NaN</span>
+<span class="go">10:32 → 2.6</span>
+</pre></div>
+</div>
+<p>Forward fill produces:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">10:30 → 2.4</span>
+<span class="go">10:31 → 2.4</span>
+<span class="go">10:32 → 2.6</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_ffill</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># forward fill missing values</span>
+<span class="n">df_ffill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df_ffill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># check whether missing values remain</span>
+<span class="n">df_ffill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(0)
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Backward fill</strong> works in the opposite direction. It uses the <strong>next available observation</strong> to fill a missing value. For the same toy dataset shown above, backward fill gives:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">10:30 → 2.4</span>
+<span class="go">10:31 → 2.6</span>
+<span class="go">10:32 → 2.6</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_bfill</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># backward fill missing values</span>
+<span class="n">df_bfill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df_bfill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">bfill</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># check whether missing values remain</span>
+<span class="n">df_bfill</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(0)
+</pre></div>
+</div>
+</div>
+</div>
+<div class='alert alert-danger'>
+<div class="admonition-forward-fill-or-backward-fill questions admonition" id="questions-2">
+<p class="admonition-title">Forward fill or Backward fill?</p>
+<ul class="simple">
+<li><p>Forward fill uses the previous value, whereas backward fill uses the next value.</p></li>
+<li><p>If only one observation is missing in dataset, either forward fill or backward fill is applicable, but neither approach is automatically better.</p></li>
+<li><p>The choice depends on the meaning of the data and the objectives of the downstream analysis.</p></li>
+</ul>
+</div>
+</div><p>Instead of copying one value forward or backward, we can estimate a missing value based on surrounding observations. This is called <strong>interpolation</strong>. For the same set of observations, we can also estimate the missing value by interpolation. <strong>Linear interpolation</strong> estimates “10:01 → 2.5” because 2.5 lies halfway between 2.4 and 2.6.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">10:30 → 2.4</span>
+<span class="go">10:31 → 2.5</span>
+<span class="go">10:32 → 2.6</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_interp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># linear interpolation</span>
+<span class="n">df_interp</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df_interp</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># check whether missing values remain</span>
+<span class="n">df_interp</span><span class="p">[[</span><span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Global_active_power    0
+dtype: int64
+</pre></div>
+</div>
+</div>
+</div>
+<p>Interpolation is useful when we believe the missing values should lie somewhere between known observations. Besides “linear”, pandas supports several interpolation methods as listed below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Method</p></th>
+<th class="head text-center"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>“time”</p></td>
+<td class="text-center"><p>Uses actual time intervals between observations; useful for time-series data</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>“nearest”</p></td>
+<td class="text-center"><p>Uses the value from the nearest observation</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>“zero”</p></td>
+<td class="text-center"><p>Uses the previous value</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>“slinear”</p></td>
+<td class="text-center"><p>First-order spline interpolation</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>“quadratic”</p></td>
+<td class="text-center"><p>Quadratic spline interpolation</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>“cubic”</p></td>
+<td class="text-center"><p>Cubic spline interpolation</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>“polynomial”</p></td>
+<td class="text-center"><p>Polynomial interpolation; requires order</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>“spline”</p></td>
+<td class="text-center"><p>Spline interpolation; requires order</p></td>
+</tr>
+</tbody>
+</table>
+<p>Because we are handling time-series data, it is natural to choose <strong>time-aware interpolation</strong>. It uses the time information represented by the datetime index when estimating missing values. This is particularly useful when observations are not perfectly equally spaced.</p>
+<div class='alert alert-info'>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Noted that time-weighted interpolation only works on Series or DataFrames with a <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>.</p>
+</div>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_interp_time</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">df_interp_time</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_interp_time</span><span class="p">[</span><span class="s2">"Datetime"</span><span class="p">])</span>
+<span class="n">df_interp_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_interp_time</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"Datetime"</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">())</span>
+<span class="n">df_interp_time</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Global_active_power</th>
+      <th>Global_reactive_power</th>
+      <th>Voltage</th>
+      <th>Global_intensity</th>
+      <th>Sub_metering_1</th>
+      <th>Sub_metering_2</th>
+      <th>Sub_metering_3</th>
+    </tr>
+    <tr>
+      <th>Datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2006-12-16 17:24:00</th>
+      <td>2006-12-16</td>
+      <td>17:24:00</td>
+      <td>4.216</td>
+      <td>0.418</td>
+      <td>234.84</td>
+      <td>18.4</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:25:00</th>
+      <td>2006-12-16</td>
+      <td>17:25:00</td>
+      <td>5.360</td>
+      <td>0.436</td>
+      <td>233.63</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>16.0</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:26:00</th>
+      <td>2006-12-16</td>
+      <td>17:26:00</td>
+      <td>5.374</td>
+      <td>0.498</td>
+      <td>233.29</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:27:00</th>
+      <td>2006-12-16</td>
+      <td>17:27:00</td>
+      <td>5.388</td>
+      <td>0.502</td>
+      <td>233.74</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+    <tr>
+      <th>2006-12-16 17:28:00</th>
+      <td>2006-12-16</td>
+      <td>17:28:00</td>
+      <td>3.666</td>
+      <td>0.528</td>
+      <td>235.68</td>
+      <td>15.8</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>17.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># time-weighted interpolation</span>
+<span class="n">df_interp_time</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">df_interp_time</span><span class="p">[</span><span class="s2">"Global_active_power"</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"time"</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="c1"># check whether missing values remain</span>
+<span class="n">df_interp_time</span><span class="p">[[</span><span class="s2">"Global_active_power"</span><span class="p">]]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Global_active_power    0
+dtype: int64
+</pre></div>
+</div>
+</div>
+</div>
+<div class='alert alert-danger'>
+<div class="dropdown questions admonition" id="questions-3">
+<p class="admonition-title">How about a dataset with a long missing period?</p>
+<p>For a dataset with a long missing period, avoid ordinary linear or time interpolation. They may create unrealistic values, especially when the signal changes over time. There are several recommended approach depending on the length of missing period.</p>
+<ul class="simple">
+<li><p>Short gaps: Use linear or time interpolation.</p></li>
+<li><p>Long gaps: Use a model-based method, such as: seasonal averages, interpolation using similar days or hours, time-series forecasting, machine-learning imputation.</p></li>
+<li><p>Very long gaps: Consider leaving the values missing or removing that period if reliable reconstruction is not possible.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-warning'>
+<div class="admonition-callout callout admonition" id="callout-4">
+<p class="admonition-title">Callout</p>
+<p>When working with time-series data, the first question should not simply be “How do I fill the missing values?” Instead, ask “What exactly is missing?”</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">                  Missing Data</span>
+<span class="go">                       │</span>
+<span class="go">             ┌─────────┴─────────┐</span>
+<span class="go">             ↓                   ↓</span>
+<span class="go">       Missing value       Missing timestamp</span>
+<span class="go">             │                   │</span>
+<span class="go">       Value is NaN        Row is absent</span>
+<span class="go">             │                   │</span>
+<span class="go">       ┌─────┼─────┐             │</span>
+<span class="go">       ↓     ↓     ↓             ↓</span>
+<span class="go">     ffill bfill interpolate    reindex</span>
+</pre></div>
+</div>
+<p>The central lesson is that there is no universally correct imputation method for time-series data. Forward fill assumes the most recent value remains reasonable, backward fill uses the next available observation, and interpolation estimates values between observations. Most importantly, when preparing data for forecasting, the imputation process must respect the temporal direction of the problem so that <strong>future information does not leak into past</strong>.</p>
+</div>
+</div><div class='alert alert-success'>
+<div class="admonition-exercise exercise important admonition" id="exercise-0">
+<p class="admonition-title">Exercise</p>
+<ul>
+<li><p>Select Bike Sharing Demand dataset or Jena Climate Weather dataset that contains date, time, or time-series information.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://raw.githubusercontent.com/TeamLab/machine_learning_from_scratch_with_python/master/code/ch8/data/train.csv"</span>
+<span class="n">bike</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"datetime"</span><span class="p">])</span>
+<span class="n">bike</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://huggingface.co/datasets/sayanroy058/Jena-Climate/resolve/main/jena_climate_2009_2016.csv"</span>
+<span class="n">jena</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">jena</span><span class="p">[</span><span class="s2">"Date Time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+    <span class="n">jena</span><span class="p">[</span><span class="s2">"Date Time"</span><span class="p">],</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%d</span><span class="s2">.%m.%Y %H:%M:%S"</span>
+<span class="p">)</span>
+<span class="n">jena</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Inspect dataset by examining its dimensions, columns, data types, and sample observations.</p></li>
+<li><p>Calculate descriptive statistics to understand the distribution and characteristics of the numerical variables.</p></li>
+<li><p>Inspect and convert date and time columns into appropriate pandas datetime representations.</p></li>
+<li><p>Check for missing values and missing timestamps, and identify gaps or irregularities in the time sequence.</p></li>
+<li><p>Extract date and time features, such as year, month, day, hour, quarter, day of year, and day of the week.</p></li>
+<li><p>Create time-based features, including elapsed-time variables, lagged features, and rolling-window statistics where appropriate.</p></li>
+<li><p>Handle missing observations using suitable techniques such as forward fill, backward fill, or interpolation, while considering the temporal meaning of the data.</p></li>
+<li><p>Verify the cleaned dataset by checking data types, missing values, chronological ordering, feature values, and the final dataset structure before using it for machine learning.</p></li>
+</ul>
+</div>
+</div><div class='alert alert-info'>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Convert date and time strings into datetime objects and work with time zones using <code class="docutils literal notranslate"><span class="pre">tz_localize()</span></code> and <code class="docutils literal notranslate"><span class="pre">tz_convert()</span></code>.</p></li>
+<li><p>Select and filter time-series observations using dates, time ranges, and DatetimeIndex.</p></li>
+<li><p>Extract useful temporal information and calculate time differences for analysis and feature engineering.</p></li>
+<li><p>Create lagged and rolling-window features to capture past observations, trends, and local patterns while avoiding data leakage.</p></li>
+<li><p>Detect and handle missing values and missing timestamps using techniques such as reindexing, forward fill, backward fill, and interpolation.</p></li>
+</ul>
+</div>
+</div></section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../3-processing-categorical-data/" class="btn btn-neutral float-left" title="Processing Categorical Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../5-wrangling-text-data/" class="btn btn-neutral float-right" title="Wrangling Text Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 | ENCCS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

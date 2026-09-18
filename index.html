@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practical Data Wrangling &mdash; Practical Data Wrangling</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=187304be"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=35a8b989"></script>
+      <script src="_static/minipres.js?v=a0d29692"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="_static/togglebutton.js?v=b8b12719"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex/" />
+    <link rel="search" title="Search" href="search/" />
+    <link rel="next" title="Setting Up Programming Environment" href="env/0-setting-up/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Practical Data Wrangling
+              <img src="_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="episodes/1-getting-to-know-your-data/">Getting to Know Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/3-processing-categorical-data/">Processing Categorical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/4-exploring-dates-times-and-time-series-data/">Exploring Dates, Times, and Time-Series Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/6-transforming-image-data/">Transforming Image Data</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Practical Data Wrangling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Practical Data Wrangling</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/data-wrangling-fundamentals/blob/main/content/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="practical-data-wrangling">
+<h1>Practical Data Wrangling<a class="headerlink" href="#practical-data-wrangling" title="Link to this heading"></a></h1>
+<p>Data is essential in data-driven projects, as it forms the foundation for all subsequent analysis, modeling, and decision-making. Depending on the specific task, raw data may be collected from a wide variety of sources such as databases, APIs, sensors, logs, documents, or images. Before it can be effectively used for analysis or machine learning, raw data must be cleaned, transformed, validated, and organized into a consistent and usable format. As data comes in many different forms, including numerical, categorical, time series, text, event/log, and image data, the tools and techniques used for data wrangling can vary significantly depending on the data type and the requirements of the task.</p>
+<p>In this workshop, we will cover practical data wrangling techniques for numerical, categorical, time series, text, and image data. Participants will learn how to detect and handle missing values, outliers, inconsistencies, duplicates, and formatting problems. We will demonstrate methods for transforming and encoding categorical variables, parsing and aggregating temporal data, processing unstructured text, and preparing image datasets for machine learning and analytics. Each session combines concepts, demonstrations, and hands-on exercises using realistic datasets to help participants develop practical skills that can be applied immediately in downstream modeling tasks.</p>
+<p>This workshop is designed for data practitioners who regularly work with raw or semi-structured data and need to prepare it for analysis or modeling, including data analysts, data scientists, machine learning engineers, and software engineers looking to strengthen their practical data preprocessing skills, as well as researchers and engineers working with real-world datasets who need a structured approach to data cleaning and transformation.</p>
+<div class="admonition-prerequisites prerequisites admonition" id="prerequisites-0">
+<p class="admonition-title">Prerequisites</p>
+<ul class="simple">
+<li><p>Familiarity with Python basics (lists, dictionaries, loops, functions) and libraries like NumPy, Pandas, and Matplotlib/Seaborn.</p></li>
+<li><p>Be familiar with tabular data, rows and columns, missing values, data types, and basic descriptive statistics.</p></li>
+<li><p>Have introductory experience using NumPy and pandas for loading, inspecting, filtering, transforming, and summarizing data.</p></li>
+<li><p>Elementary understanding of statistics (mean, variance, correlation, basic probability).</p></li>
+<li><p>Basic command-line or Jupyter Notebook experience (navigating files, running scripts, installing packages).</p></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Software Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="env/0-setting-up/">Setting Up Programming Environment</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Lesson Episodes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="episodes/1-getting-to-know-your-data/">Getting to Know Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/2-handling-numerical-data/">Handling Numerical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/3-processing-categorical-data/">Processing Categorical Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/4-exploring-dates-times-and-time-series-data/">Exploring Dates, Times, and Time-Series Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/5-wrangling-text-data/">Wrangling Text Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="episodes/6-transforming-image-data/">Transforming Image Data</a></li>
+</ul>
+</div>
+<div class="attention admonition">
+<p class="admonition-title">License</p>
+<div class="attention dropdown admonition">
+<p class="admonition-title">CC BY-SA for media and pedagogical material</p>
+<p>Copyright © 2026 ENCCS. This material is released by ENCCS under the Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0).</p>
+<ul class="simple">
+<li><p><strong>Canonical URL</strong>: <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/">https://creativecommons.org/licenses/by-sa/4.0/</a></p></li>
+<li><p><a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/legalcode.en">See the legal code</a></p></li>
+</ul>
+<p class="rubric" id="you-are-free-to">You are free to</p>
+<ol class="arabic simple">
+<li><p><strong>Share</strong> — copy and redistribute the material in any medium or format for any purpose, even commercially.</p></li>
+<li><p><strong>Adapt</strong> — remix, transform, and build upon the material for any purpose, even commercially.</p></li>
+<li><p>The licensor cannot revoke these freedoms as long as you follow the license terms.</p></li>
+</ol>
+<p class="rubric" id="under-the-following-terms">Under the following terms</p>
+<ol class="arabic simple">
+<li><p><strong>Attribution</strong> — You must give <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/#ref-appropriate-credit">appropriate credit</a> , provide a link to the license, and <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/#ref-indicate-changes">indicate if changes were made</a> . You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</p></li>
+<li><p><strong>ShareAlike</strong> — If you remix, transform, or build upon the material, you must distribute your contributions under the <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/#ref-same-license">same license</a> as the original.</p></li>
+<li><p><strong>No additional restrictions</strong> — You may not apply legal terms or <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/#ref-technological-measures">technological measures</a> that legally restrict others from doing anything the license permits.</p></li>
+</ol>
+<p class="rubric" id="notices">Notices</p>
+<p>You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a class="reference external" href="https://creativecommons.org/licenses/by/4.0/deed.en#ref-exception-or-limitation">exception or limitation</a> .</p>
+<p>No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as <a class="reference external" href="https://creativecommons.org/licenses/by/4.0/deed.en#ref-publicity-privacy-or-moral-rights">publicity, privacy, or moral rights</a> may limit how you use the material.</p>
+<p>This deed highlights only some of the key features and terms of the actual license. It is not a license and has no legal value. You should carefully review all of the terms and conditions of the actual license before using the licensed material.</p>
+</div>
+<div class="attention dropdown admonition">
+<p class="admonition-title">MIT for source code and code snippets</p>
+<p>MIT License</p>
+<p>Copyright (c) 2026, ENCCS project, {{author}}</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="env/0-setting-up/" class="btn btn-neutral float-right" title="Setting Up Programming Environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 | ENCCS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
